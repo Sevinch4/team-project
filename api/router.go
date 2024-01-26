@@ -1,9 +1,10 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
 	"teamProject/api/handler"
 	"teamProject/storage"
+
+	"github.com/gin-gonic/gin"
 )
 
 func New(storage storage.IStorage) *gin.Engine {
@@ -11,12 +12,19 @@ func New(storage storage.IStorage) *gin.Engine {
 
 	r := gin.New()
 
-	r.POST("/branch", h.CreateBranch)
-	r.GET("/branch/:id", h.GetBranch)
-	r.GET("/branches", h.GetBranchList)
-	r.PUT("/branch/:id", h.UpdateBranch)
-	r.DELETE("/branch/:id", h.DeleteBranch)
+	r.POST("/stafftarif", h.CreateStaffTarif)
+	r.GET("/stafftarif/:id", h.GetStaffTarif)
+	r.GET("/stafftarifs", h.GetStaffTarifList)
+	r.PUT("/stafftarif/:id", h.UpdateStaffTarif)
+	r.DELETE("/stafftarif/:id", h.DeleteStaffTarif)
+
+	// Staff
+
+	r.POST("/staff", h.CreateStaff)
+	r.GET("/staff/:id", h.GetStaff)
+	r.GET("/staffs", h.GetStaffList)
+	r.PUT("/staff/:id", h.UpdateStaff)
+	r.DELETE("/staff/:id", h.DeleteStaff)
 
 	return r
-
 }
