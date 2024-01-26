@@ -34,7 +34,7 @@ func (b branchRepo) Create(branch models.CreateBranch) (string, error) {
 
 func (b branchRepo) GetByID(id string) (models.Branch, error) {
 	branch := models.Branch{}
-	query := `select id, name, address, created_at, updated_at from branches where id = $1`
+	query := `select id, name, address, created_at, updated_at from branches where id = $1 and deleted_at is null`
 	if err := b.db.QueryRow(query, id).Scan(
 		&branch.ID,
 		&branch.Name,
@@ -68,7 +68,7 @@ func (b branchRepo) GetList(request models.GetListRequest) (models.BranchRespons
 		return models.BranchResponse{}, err
 	}
 
-	query = `select id, name, address, created_at, updated_at, deleted_at from branches where deleted_at is NULL  `
+	query = `select id, name, address, created_at, updated_at from branches where deleted_at is NULL  `
 	if search != "" {
 		query += fmt.Sprintf(` and name ilike '%%%s%%' `, search)
 	}
@@ -87,8 +87,7 @@ func (b branchRepo) GetList(request models.GetListRequest) (models.BranchRespons
 			&branch.Name,
 			&branch.Address,
 			&branch.CreatedAt,
-			&branch.UpdatedAt,
-			&branch.DeletedAt); err != nil {
+			&branch.UpdatedAt); err != nil {
 			fmt.Println("error is while scanning branch", err.Error())
 			return models.BranchResponse{}, err
 		}
