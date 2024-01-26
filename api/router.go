@@ -11,12 +11,11 @@ func New(storage storage.IStorage) *gin.Engine {
 
 	r := gin.New()
 
-	r.POST("/branch", h.CreateBranch)
-	r.GET("/branch/:id", h.GetBranch)
-	r.GET("/branches", h.GetBranchList)
-	r.PUT("/branch/:id", h.UpdateBranch)
-	r.DELETE("/branch/:id", h.DeleteBranch)
+	r.POST("/stafftarif", h.CreateStaffTarif)
+	r.GET("/stafftarif/:id", h.GetStaffTarif)
+	r.GET("/stafftarifs", h.GetStaffTarifList)
+	r.PUT("/stafftarif/:id", h.UpdateStaffTarif) // Add a leading slash here
+	r.DELETE("/stafftarif/:id", h.DeleteStaffTarif)
 
 	return r
-
 }

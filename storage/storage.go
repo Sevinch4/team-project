@@ -4,13 +4,13 @@ import "teamProject/api/models"
 
 type IStorage interface {
 	Close()
-	Branch() IBranchStorage
+	StaffTarif() IStaffTarifRepo
 }
 
-type IBranchStorage interface {
-	Create(models.CreateBranch) (string, error)
-	GetByID(id string) (models.Branch, error)
-	GetList(models.GetListRequest) (models.BranchResponse, error)
-	Update(models.UpdateBranch) (string, error)
-	Delete(id string) error
+type IStaffTarifRepo interface {
+	Create(tarif models.CreateStaffTarif) (string, error)
+	GetStaffTarifByID(models.PrimaryKey) (models.StaffTarif, error)
+	GetStaffTarifList(req models.GetListRequest) (models.StaffTarifResponse, error)
+	UpdateStaffTarif(models.UpdateStaffTarif) (string, error)
+	DeleteStaffTarif(id string) error
 }
