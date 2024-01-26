@@ -29,3 +29,11 @@ func (s Store) Close() {
 func (s Store) Branch() storage.IBranchStorage {
 	return NewBranchRepo(s.DB)
 }
+
+func (s Store) Sale() storage.ISaleStorage {
+	return NewSaleRepo(s.DB)
+}
+
+func (s Store) Transaction() storage.ITransactionStorage {
+	return NewTransactionRepo(s.DB)
+}
