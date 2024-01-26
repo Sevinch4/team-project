@@ -34,14 +34,13 @@ func (b branchRepo) Create(branch models.CreateBranch) (string, error) {
 
 func (b branchRepo) GetByID(id string) (models.Branch, error) {
 	branch := models.Branch{}
-	query := `select id, name, address, created_at, updated_at, deleted_at from branches where id = $1`
+	query := `select id, name, address, created_at, updated_at from branches where id = $1`
 	if err := b.db.QueryRow(query, id).Scan(
 		&branch.ID,
 		&branch.Name,
 		&branch.Address,
 		&branch.CreatedAt,
-		&branch.UpdatedAt,
-		&branch.DeletedAt); err != nil {
+		&branch.UpdatedAt); err != nil {
 		fmt.Println("error is while selecting by id", err.Error())
 		return models.Branch{}, err
 	}
