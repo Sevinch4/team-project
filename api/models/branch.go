@@ -1,0 +1,36 @@
+package models
+
+import (
+	"database/sql"
+	"time"
+)
+
+type Branch struct {
+	ID        string       `json:"id"`
+	Name      string       `json:"name"`
+	Address   string       `json:"address"`
+	CreatedAt time.Time    `json:"created_at"`
+	UpdatedAt time.Time    `json:"updated_at"`
+	DeletedAt sql.NullTime `json:"deleted_at"`
+}
+
+type CreateBranch struct {
+	Name    string `json:"name"`
+	Address string `json:"address"`
+}
+
+type UpdateBranch struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Address   string    `json:"address"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type DeleteBranch struct {
+	ID        string    `json:"-"`
+	DeletedAt time.Time `json:"deleted_at"`
+}
+type BranchResponse struct {
+	Branches []Branch
+	Count    int
+}
