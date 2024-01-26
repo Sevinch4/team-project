@@ -3,6 +3,7 @@ package models
 type Staff struct {
 	ID         string `json:"id"`
 	BranchID   string `json:"branch_id"`
+	TariffID   string `json:"tariff_id"`
 	StaffType  string `json:"staff_type"`
 	Name       string `json:"name"`
 	Balance    uint   `json:"balance"`
@@ -17,10 +18,10 @@ type Staff struct {
 
 type CreateStaff struct {
 	BranchID   string `json:"branch_id"`
+	TariffID   string `json:"tariff_id"`
 	StaffType  string `json:"staff_type"`
 	Name       string `json:"name"`
 	Balance    uint   `json:"balance"`
-	Age        uint   `json:"age"`
 	BirthDate  string `json:"birth_date"`
 	Login      string `json:"login"`
 	Password   string `json:"password"`
@@ -29,6 +30,7 @@ type CreateStaff struct {
 type UpdateStaff struct {
 	ID         string `json:"id"`
 	BranchID   string `json:"branch_id"`
+	TariffID   string `json:"tariff_id"`
 	StaffType  string `json:"staff_type"`
 	Name       string `json:"name"`
 	Balance    uint   `json:"balance"`

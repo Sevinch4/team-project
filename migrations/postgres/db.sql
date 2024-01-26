@@ -14,7 +14,7 @@ CREATE TABLE branches(
 );
 
 CREATE TABLE staff_tarifs (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY,
   name VARCHAR(30) UNIQUE NOT NULL,
   tarif_type tarif_type_enum NOT NULL,
   amount_for_cash INT,
@@ -25,7 +25,7 @@ CREATE TABLE staff_tarifs (
 );
 
 CREATE TABLE staffs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY,
     branch_id UUID REFERENCES branches(id),
     tariff_id UUID REFERENCES staff_tarifs(id),
     staff_type staff_type_enum NOT NULL,

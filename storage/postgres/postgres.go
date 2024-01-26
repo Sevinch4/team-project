@@ -40,3 +40,7 @@ func (s *Store) Close() {
 func (s *Store) StaffTarif() storage.IStaffTarifRepo {
 	return NewStaffTarifRepo(s.DB)
 }
+
+func (s *Store) Staff() storage.IStaffRepo {
+	return NewStaffRepo(s.DB)
+}

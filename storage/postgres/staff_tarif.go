@@ -25,9 +25,16 @@ func (s *staffTarifRepo) Create(tarif models.CreateStaffTarif) (string, error) {
 	id := uuid.New().String()
 	createdAt := time.Now()
 
-	_, err := s.DB.Exec(`INSERT INTO staff_tarifs (id, name, tarif_type, amount_for_cash, amount_for_card, created_at) VALUES ($1, $2, $3, $4, $5, $6)`,
-		id, tarif.Name, tarif.TarifType, tarif.AmountForCash, tarif.AmountForCard, createdAt)
-	if err != nil {
+	if _, err := s.DB.Exec(`INSERT INTO staff_tarifs 
+	(id, name, tarif_type, amount_for_cash, amount_for_card, created_at) 
+		VALUES ($1, $2, $3, $4, $5, $6)`,
+			id, 
+			tarif.Name, 
+			tarif.TarifType, 
+			tarif.AmountForCash, 
+			tarif.AmountForCard, 
+			createdAt,
+	); err != nil {
 		log.Println("Error while inserting data:", err)
 		return "", err
 	}
