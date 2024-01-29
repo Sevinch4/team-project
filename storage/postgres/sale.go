@@ -19,7 +19,7 @@ func NewSaleRepo(db *sql.DB) storage.ISaleStorage {
 func (s saleRepo) Create(sale models.CreateSale) (string, error) {
 	id := uuid.New()
 	query := `insert into sales (id, branch_id, shop_assistant_id, cashier_id, payment_type, price, status, client_name)
-								values($1, $2, $3, $4, $5, $6, $7)`
+								values($1, $2, $3, $4, $5, $6, $7, $8)`
 
 	if _, err := s.db.Exec(query, id,
 		sale.BranchID,
@@ -54,7 +54,7 @@ func (s saleRepo) GetByID(id string) (models.Sale, error) {
 		fmt.Println("error is while selecting by id", err.Error())
 		return models.Sale{}, err
 	}
-	return models.Sale{}, nil
+	return sale, nil
 }
 
 func (s saleRepo) GetList(request models.GetListRequest) (models.SaleResponse, error) {
@@ -84,7 +84,8 @@ func (s saleRepo) GetList(request models.GetListRequest) (models.SaleResponse, e
 		query += fmt.Sprintf(` AND client_name ilike '%%%s%%' `, search)
 	}
 
-	query += ` AND LIMIT $1 OFFSET $2`
+	query += ` LIMIT $1 OFFSET $2`
+
 	rows, err := s.db.Query(query, request.Limit, offset)
 	for rows.Next() {
 		sale := models.Sale{}
@@ -112,7 +113,7 @@ func (s saleRepo) GetList(request models.GetListRequest) (models.SaleResponse, e
 
 func (s saleRepo) Update(sale models.UpdateSale) (string, error) {
 	query := `update sales set branch_id = $1, shop_assistant_id = $2, cashier_id = $3, payment_type = $4, 
-				price = $5, status = $6, client_name = $7, updated_at = now() from sales where id = $8`
+				price = $5, status = $6, client_name = $7, updated_at = now() where id = $8`
 
 	if _, err := s.db.Exec(query,
 		&sale.BranchID,
@@ -122,7 +123,6 @@ func (s saleRepo) Update(sale models.UpdateSale) (string, error) {
 		&sale.Price,
 		&sale.Status,
 		&sale.ClientName,
-		&sale.UpdatedAt,
 		&sale.ID); err != nil {
 		fmt.Println("error is while updating sale", err.Error())
 		return "", err
