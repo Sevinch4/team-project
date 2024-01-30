@@ -101,7 +101,7 @@ func (c categoryRepo) Update(category models.UpdateCategory) (string, error) {
 }
 
 func (c categoryRepo) Delete(id string) error {
-	query := `update category set deleted_at = now() where id = $1`
+	query := `update categories set deleted_at = now() where id = $1`
 	if _, err := c.db.Exec(context.Background(), query, id); err != nil {
 		fmt.Println("error is while deleting", err.Error())
 		return err

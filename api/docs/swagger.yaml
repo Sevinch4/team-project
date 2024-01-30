@@ -205,6 +205,17 @@ definitions:
       parent_id:
         type: string
     type: object
+  models.UpdateProduct:
+    properties:
+      barcode:
+        type: integer
+      category_id:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+    type: object
   models.UpdateSale:
     properties:
       branch_id:
@@ -703,6 +714,11 @@ paths:
         name: id
         required: true
         type: string
+      - description: product
+        in: body
+        name: product
+        schema:
+          $ref: '#/definitions/models.UpdateProduct'
       produces:
       - application/json
       responses:

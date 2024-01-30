@@ -20,7 +20,8 @@ func NewProductRepo(db *pgxpool.Pool) storage.IProducts {
 func (p productRepo) Create(product models.CreateProduct) (string, error) {
 	id := uuid.New()
 	query := `insert into products (id, name, price, barcode, category_id) values($1, $2, $3, $4, $5)`
-	if _, err := p.db.Exec(context.Background(), query, id, product.Name, product.Price, product.Barcode, product.CategoryID); err != nil {
+	if _, err := p.db.Exec(context.Background(), query,
+		id, product.Name, product.Price, product.Barcode, product.CategoryID); err != nil {
 		fmt.Println("error is while inserting data", err.Error())
 		return "", err
 	}
@@ -57,7 +58,7 @@ func (p productRepo) GetList(request models.GetListRequest) (models.ProductRespo
 	countQuery = `select count(1) from products where deleted_at is null `
 	if search != "" {
 		countQuery += fmt.Sprintf(` and (name ilike '%%%s%%' or CAST(price as text) ilike '%%%s%%' 
-											or CAST(barcode as text) ilike '%%%s%%'`, search, search, search)
+											or CAST(barcode as text) ilike '%%%s%%')`, search, search, search)
 	}
 	if err := p.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
 		fmt.Println("error is while scanning count", err.Error())
@@ -68,7 +69,7 @@ func (p productRepo) GetList(request models.GetListRequest) (models.ProductRespo
 							from products where deleted_at is null `
 	if search != "" {
 		query += fmt.Sprintf(` and (name ilike '%%%s%%' or CAST(price as text) ilike '%%%s%%' 
-											or CAST(barcode as text) ilike '%%%s%%'`, search, search, search)
+											or CAST(barcode as text) ilike '%%%s%%') `, search, search, search)
 	}
 
 	query += ` LIMIT $1 OFFSET $2`

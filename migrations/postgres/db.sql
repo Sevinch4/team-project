@@ -9,7 +9,7 @@ create type repostitory_transaction_type_enum as enum ('minus', 'plus');
 create table categories(
     id varchar(40) primary key not null ,
     name varchar(30),
-    parent_id varchar(40) references categories(id),
+    parent_id varchar(40) references categories(id) default null,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     deleted_at TIMESTAMP DEFAULT NULL
@@ -20,7 +20,7 @@ create table products(
     name varchar(30),
     price int ,
     barcode int,
-    category_id timestamp default now(),
+    category_id varchar(40) references categories(id),
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     deleted_at TIMESTAMP DEFAULT NULL

@@ -24,6 +24,12 @@ func New(storage storage.IStorage) *gin.Engine {
 	r.PUT("/category/:id", h.UpdateCategory)
 	r.DELETE("/category/:id", h.DeleteCategory)
 
+	r.POST("/product", h.CreateProduct)
+	r.GET("/product/:id", h.GetProduct)
+	r.GET("/products", h.GetProductList)
+	r.PUT("/product/:id", h.UpdateProduct)
+	r.DELETE("/product/:id", h.DeleteProduct)
+
 	r.POST("/branch", h.CreateBranch)
 	r.GET("/branch/:id", h.GetBranch)
 	r.GET("/branches", h.GetBranchList)

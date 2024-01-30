@@ -1,12 +1,14 @@
 package models
 
+import "time"
+
 type Category struct {
-	ID        string `json:"id"`
-	Name      string `json:"name"`
-	ParentID  string `json:"parent_id"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
-	DeletedAt string `json:"-"`
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	ParentID  string    `json:"parent_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	DeletedAt string    `json:"-"`
 }
 
 type CreateCategory struct {
@@ -15,10 +17,10 @@ type CreateCategory struct {
 }
 
 type UpdateCategory struct {
-	ID        string `json:"-"`
-	Name      string `json:"name"`
-	ParentID  string `json:"parent_id"`
-	UpdatedAt string `json:"-"`
+	ID        string    `json:"-"`
+	Name      string    `json:"name"`
+	ParentID  string    `json:"parent_id"`
+	UpdatedAt time.Time `json:"-"`
 }
 
 type CategoryResponse struct {

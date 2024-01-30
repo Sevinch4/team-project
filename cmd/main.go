@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	_ "github.com/lib/pq"
 	"log"
@@ -12,7 +13,7 @@ import (
 func main() {
 	cfg := config.Load()
 
-	store, err := postgres.New(cfg)
+	store, err := postgres.New(context.Background(), cfg)
 	if err != nil {
 		log.Fatalln("error is while connecting to db", err.Error())
 		return
