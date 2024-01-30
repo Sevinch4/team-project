@@ -4,7 +4,27 @@ CREATE TYPE transaction_type_enum AS ENUM ('withdraw', 'topup');
 CREATE TYPE source_type_enum AS ENUM ('bonus', 'sales');
 CREATE TYPE tarif_type_enum AS ENUM ('percent', 'fixed');
 CREATE TYPE staff_type_enum AS ENUM ('shop_assistant', 'cashier');
+create type repostitory_transaction_type_enum as enum ('minus', 'plus');
 
+create table categories(
+    id varchar(40) primary key not null ,
+    name varchar(30),
+    parent_id varchar(40) references categories(id),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    deleted_at TIMESTAMP DEFAULT NULL
+);
+
+create table products(
+    id uuid primary key not null ,
+    name varchar(30),
+    price int ,
+    barcode int,
+    category_id timestamp default now(),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    deleted_at TIMESTAMP DEFAULT NULL
+);
 
 CREATE TABLE branches (
         id uuid PRIMARY KEY NOT NULL,
@@ -13,6 +33,16 @@ CREATE TABLE branches (
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW(),
         deleted_at TIMESTAMP DEFAULT NULL
+);
+
+create table repositories(
+    id uuid primary key not null ,
+    product_id uuid references products(id),
+    branch_id uuid references branches(id),
+    count int,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    deleted_at TIMESTAMP DEFAULT NULL
 );
 
 CREATE TABLE sales (
@@ -29,6 +59,16 @@ CREATE TABLE sales (
         deleted_at TIMESTAMP DEFAULT NULL
 );
 
+create table baskets(
+    id uuid primary key ,
+    sale_id uuid references sales(id),
+    product_id uuid references products(id),
+    quantity int,
+    price int,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    deleted_at TIMESTAMP DEFAULT NULL
+);
 
 CREATE TABLE staff_tarifs (
                               id UUID PRIMARY KEY,
@@ -71,4 +111,12 @@ CREATE TABLE transactions (
         deleted_at TIMESTAMP DEFAULT NULL
 );
 
-
+create table repository_transactions(
+    id uuid primary key ,
+    branch_id uuid references branches(id),
+    staff_id uuid references staffs(id),
+    product_id uuid references products(id),
+    repository_transaction_type repostitory_transaction_type_enum,
+    price int,
+    quantity int
+);

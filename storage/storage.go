@@ -4,9 +4,27 @@ import "teamProject/api/models"
 
 type IStorage interface {
 	Close()
+	Category() ICategory
+	Product() IProducts
 	Branch() IBranchStorage
 	Sale() ISaleStorage
 	Transaction() ITransactionStorage
+}
+
+type ICategory interface {
+	Create(models.CreateCategory) (string, error)
+	GetByID(string) (models.Category, error)
+	GetList(models.GetListRequest) (models.CategoryResponse, error)
+	Update(models.UpdateCategory) (string, error)
+	Delete(string) error
+}
+
+type IProducts interface {
+	Create(models.CreateProduct) (string, error)
+	GetByID(string) (models.Product, error)
+	GetList(models.GetListRequest) (models.ProductResponse, error)
+	Update(models.UpdateProduct) (string, error)
+	Delete(string) error
 }
 
 type IBranchStorage interface {

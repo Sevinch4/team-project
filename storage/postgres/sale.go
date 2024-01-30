@@ -1,18 +1,19 @@
 package postgres
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"teamProject/api/models"
 	"teamProject/storage"
 )
 
 type saleRepo struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewSaleRepo(db *sql.DB) storage.ISaleStorage {
+func NewSaleRepo(db *pgxpool.Pool) storage.ISaleStorage {
 	return saleRepo{db: db}
 }
 
@@ -21,7 +22,7 @@ func (s saleRepo) Create(sale models.CreateSale) (string, error) {
 	query := `insert into sales (id, branch_id, shop_assistant_id, cashier_id, payment_type, price, status, client_name)
 								values($1, $2, $3, $4, $5, $6, $7, $8)`
 
-	if _, err := s.db.Exec(query, id,
+	if _, err := s.db.Exec(context.Background(), query, id,
 		sale.BranchID,
 		sale.ShopAssistantID,
 		sale.CashierID,
@@ -40,7 +41,7 @@ func (s saleRepo) GetByID(id string) (models.Sale, error) {
 	query := `select id, branch_id, shop_assistant_id, cashier_id, payment_type, price, status, client_name, 
 					created_at, updated_at from sales where id = $1 and deleted_at is null`
 
-	if err := s.db.QueryRow(query, id).Scan(
+	if err := s.db.QueryRow(context.Background(), query, id).Scan(
 		&sale.ID,
 		&sale.BranchID,
 		&sale.ShopAssistantID,
@@ -72,7 +73,7 @@ func (s saleRepo) GetList(request models.GetListRequest) (models.SaleResponse, e
 		countQuery += fmt.Sprintf(` AND client_name ilike '%%%s%%' `, search)
 	}
 
-	if err := s.db.QueryRow(countQuery).Scan(&count); err != nil {
+	if err := s.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
 		fmt.Println("error is while scanning count", err.Error())
 		return models.SaleResponse{}, err
 	}
@@ -86,7 +87,7 @@ func (s saleRepo) GetList(request models.GetListRequest) (models.SaleResponse, e
 
 	query += ` LIMIT $1 OFFSET $2`
 
-	rows, err := s.db.Query(query, request.Limit, offset)
+	rows, err := s.db.Query(context.Background(), query, request.Limit, offset)
 	for rows.Next() {
 		sale := models.Sale{}
 		if err = rows.Scan(
@@ -115,7 +116,7 @@ func (s saleRepo) Update(sale models.UpdateSale) (string, error) {
 	query := `update sales set branch_id = $1, shop_assistant_id = $2, cashier_id = $3, payment_type = $4, 
 				price = $5, status = $6, client_name = $7, updated_at = now() where id = $8`
 
-	if _, err := s.db.Exec(query,
+	if _, err := s.db.Exec(context.Background(), query,
 		&sale.BranchID,
 		&sale.ShopAssistantID,
 		&sale.CashierID,
@@ -132,7 +133,7 @@ func (s saleRepo) Update(sale models.UpdateSale) (string, error) {
 
 func (s saleRepo) Delete(id string) error {
 	query := `update sales set deleted_at = now() where id = $1`
-	if _, err := s.db.Exec(query, id); err != nil {
+	if _, err := s.db.Exec(context.Background(), query, id); err != nil {
 		fmt.Println("error is while deleting sale", err.Error())
 		return err
 	}

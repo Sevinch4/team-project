@@ -1,18 +1,19 @@
 package postgres
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"teamProject/api/models"
 	"teamProject/storage"
 )
 
 type branchRepo struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewBranchRepo(db *sql.DB) storage.IBranchStorage {
+func NewBranchRepo(db *pgxpool.Pool) storage.IBranchStorage {
 	return branchRepo{db: db}
 }
 func (b branchRepo) Create(branch models.CreateBranch) (string, error) {
@@ -21,7 +22,7 @@ func (b branchRepo) Create(branch models.CreateBranch) (string, error) {
 	query := `insert into branches (id, name, address) 
 									values($1, $2, $3)`
 
-	if _, err := b.db.Exec(query,
+	if _, err := b.db.Exec(context.Background(), query,
 		id,
 		branch.Name,
 		branch.Address); err != nil {
@@ -35,7 +36,7 @@ func (b branchRepo) Create(branch models.CreateBranch) (string, error) {
 func (b branchRepo) GetByID(id string) (models.Branch, error) {
 	branch := models.Branch{}
 	query := `select id, name, address, created_at, updated_at from branches where id = $1 and deleted_at is null`
-	if err := b.db.QueryRow(query, id).Scan(
+	if err := b.db.QueryRow(context.Background(), query, id).Scan(
 		&branch.ID,
 		&branch.Name,
 		&branch.Address,
@@ -63,7 +64,7 @@ func (b branchRepo) GetList(request models.GetListRequest) (models.BranchRespons
 		countQuery += fmt.Sprintf(` and name ilike '%%%s%%'`, search)
 	}
 
-	if err := b.db.QueryRow(countQuery).Scan(&count); err != nil {
+	if err := b.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
 		fmt.Println("error is while scanning count", err.Error())
 		return models.BranchResponse{}, err
 	}
@@ -74,7 +75,7 @@ func (b branchRepo) GetList(request models.GetListRequest) (models.BranchRespons
 	}
 
 	query += ` LIMIT $1 OFFSET $2`
-	rows, err := b.db.Query(query, request.Limit, offset)
+	rows, err := b.db.Query(context.Background(), query, request.Limit, offset)
 	if err != nil {
 		fmt.Println("error is while selecting * from branches", err.Error())
 		return models.BranchResponse{}, err
@@ -102,7 +103,7 @@ func (b branchRepo) GetList(request models.GetListRequest) (models.BranchRespons
 func (b branchRepo) Update(branch models.UpdateBranch) (string, error) {
 	query := `update branches set name = $1, address = $2, updated_at = Now() where id = $3`
 
-	if _, err := b.db.Exec(query,
+	if _, err := b.db.Exec(context.Background(), query,
 		&branch.Name,
 		&branch.Address,
 		&branch.ID); err != nil {
@@ -115,7 +116,7 @@ func (b branchRepo) Update(branch models.UpdateBranch) (string, error) {
 func (b branchRepo) Delete(id string) error {
 	query := `update branches set deleted_at = now() where id = $1`
 
-	if _, err := b.db.Exec(query, id); err != nil {
+	if _, err := b.db.Exec(context.Background(), query, id); err != nil {
 		fmt.Println("error is while deleting branches", err.Error())
 		return err
 	}

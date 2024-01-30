@@ -18,6 +18,12 @@ func New(storage storage.IStorage) *gin.Engine {
 
 	r := gin.New()
 
+	r.POST("/category", h.CreateCategory)
+	r.GET("/category/:id", h.GetCategory)
+	r.GET("/categories", h.GetCategoryList)
+	r.PUT("/category/:id", h.UpdateCategory)
+	r.DELETE("/category/:id", h.DeleteCategory)
+
 	r.POST("/branch", h.CreateBranch)
 	r.GET("/branch/:id", h.GetBranch)
 	r.GET("/branches", h.GetBranchList)

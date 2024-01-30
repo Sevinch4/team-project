@@ -1,39 +1,59 @@
 package postgres
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"teamProject/config"
 	"teamProject/storage"
 )
 
 type Store struct {
-	DB *sql.DB
+	Pool *pgxpool.Pool
 }
 
-func New(cfg config.Config) (storage.IStorage, error) {
-	url := fmt.Sprintf(`host=%s port=%s user=%s password=%s database=%s sslmode=disable`,
-		cfg.PostgresHost, cfg.PostgresPort, cfg.PostgresUser, cfg.PostgresPassword, cfg.PostgresDB)
-
-	db, err := sql.Open("postgres", url)
+func New(ctx context.Context, cfg config.Config) (storage.IStorage, error) {
+	poolConfig, err := pgxpool.ParseConfig(fmt.Sprintf(
+		`postgres://%s:%s@%s:%s/%s?sslmode=disable`,
+		cfg.PostgresUser,
+		cfg.PostgresPassword,
+		cfg.PostgresHost,
+		cfg.PostgresPort,
+		cfg.PostgresDB))
 	if err != nil {
+		fmt.Println("error is while parsing config", err.Error())
 		return nil, err
 	}
-	return Store{DB: db}, nil
+	poolConfig.MaxConns = 100
+
+	pool, err := pgxpool.NewWithConfig(ctx, poolConfig)
+	if err != nil {
+		fmt.Println("error is while connecting to db", err.Error())
+		return nil, err
+	}
+	return Store{Pool: pool}, nil
 }
 
 func (s Store) Close() {
-	s.DB.Close()
+	s.Pool.Close()
+}
+
+func (s Store) Category() storage.ICategory {
+	return NewCategoryRepo(s.Pool)
+}
+
+func (s Store) Product() storage.IProducts {
+	return NewProductRepo(s.Pool)
 }
 
 func (s Store) Branch() storage.IBranchStorage {
-	return NewBranchRepo(s.DB)
+	return NewBranchRepo(s.Pool)
 }
 
 func (s Store) Sale() storage.ISaleStorage {
-	return NewSaleRepo(s.DB)
+	return NewSaleRepo(s.Pool)
 }
 
 func (s Store) Transaction() storage.ITransactionStorage {
-	return NewTransactionRepo(s.DB)
+	return NewTransactionRepo(s.Pool)
 }
