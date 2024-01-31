@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Staff struct {
 	ID         string `json:"id"`
 	BranchID   string `json:"branch_id"`
@@ -11,9 +13,9 @@ type Staff struct {
 	BirthDate  string `json:"birth_date"`
 	Login      string `json:"login"`
 	Password   string `json:"password"`
-	CreatedAt  string `json:"created_at"`
-	UpdatedAt  string `json:"updated_at"`
-	DeletedAt  string `json:"deleted_at"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	DeletedAt  *time.Time `json:"deleted_at"`
 }
 
 type CreateStaff struct {

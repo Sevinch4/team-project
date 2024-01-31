@@ -1,46 +1,57 @@
 package postgres
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
-	_ "github.com/lib/pq"
 	"teamProject/config"
 	"teamProject/storage"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+	_ "github.com/lib/pq"
 )
 
 type Store struct {
-	DB *sql.DB
+	Pool *pgxpool.Pool
 }
 
-func New(cfg config.Config) (*Store, error) {
-	url := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		cfg.PostgresHost, cfg.PostgresPort, cfg.PostgresUser, cfg.PostgresPassword, cfg.PostgresDB)
-
-	db, err := sql.Open("postgres", url)
+func New(ctx context.Context, cfg config.Config) (storage.IStorage, error) {
+	poolConfig, err := pgxpool.ParseConfig(fmt.Sprintf(
+		`postgres://%s:%s@%s:%s/%s?sslmode=disable`,
+		cfg.PostgresUser,
+		cfg.PostgresPassword,
+		cfg.PostgresHost,
+		cfg.PostgresPort,
+		cfg.PostgresDB))
 	if err != nil {
+		fmt.Println("error is while parsing config", err.Error())
 		return nil, err
 	}
+	poolConfig.MaxConns = 100
 
-	err = db.Ping()
+	pool, err := pgxpool.NewWithConfig(ctx, poolConfig)
 	if err != nil {
+		fmt.Println("error is while connecting to db", err.Error())
 		return nil, err
 	}
-
 	return &Store{
-		DB: db,
-	}, nil
+		Pool: pool,
+		}, nil
 }
+
 
 func (s *Store) Close() {
-	if s.DB != nil {
-		s.DB.Close()
-	}
+	s.Pool.Close()
 }
 
 func (s *Store) StaffTarif() storage.IStaffTarifRepo {
-	return NewStaffTarifRepo(s.DB)
+	return NewStaffTarifRepo(s.Pool)
 }
 
 func (s *Store) Staff() storage.IStaffRepo {
-	return NewStaffRepo(s.DB)
+	return NewStaffRepo(s.Pool)
 }
+
+func (s *Store) Repository() storage.IRepositoryRepo {
+	return NewRepositoryRepo(s.Pool)
+}
+

@@ -10,6 +10,18 @@ import (
 	"github.com/google/uuid"
 )
 
+// CreateStaff godoc
+// @Router       /staff [POST]
+// @Summary      Create a new staff
+// @Description  create a new staff
+// @Tags         staff
+// @Accept       json
+// @Produce      json
+// @Param 		 staff body models.CreateStaff false "staff"
+// @Success      200  {object}  models.Staff
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h *Handler) CreateStaff(c *gin.Context) {
 	staff := models.CreateStaff{}
 
@@ -34,6 +46,18 @@ func (h *Handler) CreateStaff(c *gin.Context) {
 	handleResponse(c, "", http.StatusCreated, createdStaffTarif)
 }
 
+// GetStaff godoc
+// @Router       /staff/{id} [GET]
+// @Summary      Get staff by id
+// @Description  get staff by id
+// @Tags         staff
+// @Accept       json
+// @Produce      json
+// @Param 		 id path string true "staff_id"
+// @Success      200  {object}  models.Staff
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h *Handler) GetStaff(c *gin.Context) {
 	uid := c.Param("id")
 
@@ -46,6 +70,20 @@ func (h *Handler) GetStaff(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, staffTarif)
 }
 
+// GetStaffList godoc
+// @Router       /staffs [GET]
+// @Summary      Get staff list
+// @Description  get staff list
+// @Tags         staff
+// @Accept       json
+// @Produce      json
+// @Param 		 page query string false "page"
+// @Param 		 limit query string false "limit"
+// @Param 		 search query string false "search"
+// @Success      200  {object}  models.StaffsResponse
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h *Handler) GetStaffList(c *gin.Context) {
 	var (
 		page, limit int
@@ -81,6 +119,19 @@ func (h *Handler) GetStaffList(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, response)
 }
 
+// UpdateStaff godoc
+// @Router       /staff/{id} [PUT]
+// @Summary      Update staff
+// @Description  get staff
+// @Tags         staff
+// @Accept       json
+// @Produce      json
+// @Param 		 id path string true "staff_id"
+// @Param 		 staff body models.UpdateStaff false "staff"
+// @Success      200  {object}  models.Staff
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h *Handler) UpdateStaff(c *gin.Context) {
 	uid := c.Param("id")
 
@@ -105,6 +156,18 @@ func (h *Handler) UpdateStaff(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, updatedStaff)
 }
 
+// DeleteStaff godoc
+// @Router       /staff/{id} [DELETE]
+// @Summary      Delete staff
+// @Description  delete staff
+// @Tags         staff
+// @Accept       json
+// @Produce      json
+// @Param 		 id path string true "staff_id"
+// @Success      200  {object}  models.Response
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h *Handler) DeleteStaff(c *gin.Context) {
 	uid := c.Param("id")
 
@@ -116,6 +179,19 @@ func (h *Handler) DeleteStaff(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, "staff tariff deleted")
 }
 
+// UpdateStaffPassword godoc
+// @Router       /staff/{id} [PATCH]
+// @Summary      Update staff password
+// @Description  update staff password
+// @Tags         staff
+// @Accept       json
+// @Produce      json
+// @Param 		 id path string true "staff_id"
+// @Param        staff body models.UpdateStaffPassword true "staff"
+// @Success      200  {object}  models.Response
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h Handler) UpdateStaffPassword(c *gin.Context) {
 	updateStaffPassword := models.UpdateStaffPassword{}
 

@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"log"
 	"teamProject/api/models"
@@ -9,13 +9,14 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type staffTarifRepo struct {
-	DB *sql.DB
+	DB *pgxpool.Pool
 }
 
-func NewStaffTarifRepo(DB *sql.DB) storage.IStaffTarifRepo {
+func NewStaffTarifRepo(DB *pgxpool.Pool) storage.IStaffTarifRepo {
 	return &staffTarifRepo{
 		DB: DB,
 	}
@@ -25,7 +26,7 @@ func (s *staffTarifRepo) Create(tarif models.CreateStaffTarif) (string, error) {
 	id := uuid.New().String()
 	createdAt := time.Now()
 
-	if _, err := s.DB.Exec(`INSERT INTO staff_tarifs 
+	if _, err := s.DB.Exec(context.Background(), `INSERT INTO staff_tarifs 
 	(id, name, tarif_type, amount_for_cash, amount_for_card, created_at) 
 		VALUES ($1, $2, $3, $4, $5, $6)`,
 			id, 
@@ -45,7 +46,7 @@ func (s *staffTarifRepo) Create(tarif models.CreateStaffTarif) (string, error) {
 func (s *staffTarifRepo) GetStaffTarifByID(id models.PrimaryKey) (models.StaffTarif, error) {
 	staffTarif := models.StaffTarif{}
 	query := `SELECT id, name, tarif_type, amount_for_cash, amount_for_card, created_at, updated_at, deleted_at FROM staff_tarifs WHERE id = $1`
-	err := s.DB.QueryRow(query, id.ID).Scan(
+	err := s.DB.QueryRow(context.Background(), query, id.ID).Scan(
 		&staffTarif.ID,
 		&staffTarif.Name,
 		&staffTarif.TarifType,
@@ -74,7 +75,7 @@ func (s *staffTarifRepo) GetStaffTarifList(request models.GetListRequest) (model
 		countQuery += fmt.Sprintf(` WHERE name ILIKE '%%%s%%'`, request.Search)
 	}
 
-	err := s.DB.QueryRow(countQuery).Scan(&count)
+	err := s.DB.QueryRow(context.Background(), countQuery).Scan(&count)
 	if err != nil {
 		log.Println("Error while scanning count of staff tariffs:", err)
 		return models.StaffTarifResponse{}, err
@@ -86,7 +87,7 @@ func (s *staffTarifRepo) GetStaffTarifList(request models.GetListRequest) (model
 	}
 	query += ` LIMIT $1 OFFSET $2`
 
-	rows, err := s.DB.Query(query, request.Limit, (request.Page-1)*request.Limit)
+	rows, err := s.DB.Query(context.Background(), query, request.Limit, (request.Page-1)*request.Limit)
 	if err != nil {
 		log.Println("Error while querying staff tariffs:", err)
 		return models.StaffTarifResponse{}, err
@@ -121,7 +122,7 @@ func (s *staffTarifRepo) GetStaffTarifList(request models.GetListRequest) (model
 func (s *staffTarifRepo) UpdateStaffTarif(starif models.UpdateStaffTarif) (string, error) {
 	query := `UPDATE staff_tarifs SET name = $1, tarif_type = $2, amount_for_cash = $3, amount_for_card = $4, updated_at = NOW() WHERE id = $5`
 
-	_, err := s.DB.Exec(query,
+	_, err := s.DB.Exec(context.Background(), query,
 		starif.Name,
 		starif.TarifType,
 		starif.AmountForCash,
@@ -139,7 +140,7 @@ func (s *staffTarifRepo) UpdateStaffTarif(starif models.UpdateStaffTarif) (strin
 func (s *staffTarifRepo) DeleteStaffTarif(id string) error {
 	query := `UPDATE staff_tarifs SET deleted_at = NOW() WHERE id = $1`
 
-	_, err := s.DB.Exec(query, id)
+	_, err := s.DB.Exec(context.Background(), query, id)
 	if err != nil {
 		log.Println("Error while deleting Staff Tarif:", err)
 		return err

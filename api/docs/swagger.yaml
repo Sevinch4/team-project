@@ -1,0 +1,760 @@
+definitions:
+  models.CreateRepository:
+    properties:
+      branch_id:
+        type: string
+      count:
+        type: integer
+      paroduct_id:
+        type: string
+    type: object
+  models.CreateStaff:
+    properties:
+      balance:
+        type: integer
+      birth_date:
+        type: string
+      branch_id:
+        type: string
+      login:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      staff_type:
+        type: string
+      tariff_id:
+        type: string
+    type: object
+  models.CreateStaffTarif:
+    properties:
+      amount_for_card:
+        type: integer
+      amount_for_cash:
+        type: integer
+      name:
+        type: string
+      tarif_type:
+        type: string
+    type: object
+  models.RepositoriesResponse:
+    properties:
+      count:
+        type: integer
+      repositories:
+        items:
+          $ref: '#/definitions/models.Repository'
+        type: array
+    type: object
+  models.Repository:
+    properties:
+      branch_id:
+        type: string
+      count:
+        type: integer
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      product_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.Response:
+    properties:
+      data: {}
+      description:
+        type: string
+      statusCode:
+        type: integer
+    type: object
+  models.Staff:
+    properties:
+      age:
+        type: integer
+      balance:
+        type: integer
+      birth_date:
+        type: string
+      branch_id:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      login:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      staff_type:
+        type: string
+      tariff_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.StaffTarif:
+    properties:
+      amount_for_carsd:
+        type: integer
+      amount_for_cash:
+        type: integer
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      tarif_type:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.StaffTarifResponse:
+    properties:
+      count:
+        type: integer
+      staff_tarifs:
+        items:
+          $ref: '#/definitions/models.StaffTarif'
+        type: array
+    type: object
+  models.StaffsResponse:
+    properties:
+      count:
+        type: integer
+      staffs:
+        items:
+          $ref: '#/definitions/models.Staff'
+        type: array
+    type: object
+  models.UpdateRepository:
+    properties:
+      branch_id:
+        type: string
+      count:
+        type: integer
+      id:
+        type: string
+      paroduct_id:
+        type: string
+    type: object
+  models.UpdateStaff:
+    properties:
+      balance:
+        type: integer
+      branch_id:
+        type: string
+      id:
+        type: string
+      login:
+        type: string
+      name:
+        type: string
+      staff_type:
+        type: string
+      tariff_id:
+        type: string
+    type: object
+  models.UpdateStaffPassword:
+    properties:
+      id:
+        type: string
+      new_password:
+        type: string
+      old_password:
+        type: string
+    type: object
+  models.UpdateStaffTarif:
+    properties:
+      amount_for_carsd:
+        type: integer
+      amount_for_cash:
+        type: integer
+      id:
+        type: string
+      name:
+        type: string
+      tarif_type:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: This is a sample server celler server.
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /repositories:
+    get:
+      consumes:
+      - application/json
+      description: get repository list
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      - description: search
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RepositoriesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get repository list
+      tags:
+      - repository
+  /repository:
+    post:
+      consumes:
+      - application/json
+      description: create a new repository
+      parameters:
+      - description: repository
+        in: body
+        name: repository
+        schema:
+          $ref: '#/definitions/models.CreateRepository'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Repository'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Create a new repository
+      tags:
+      - repository
+  /repository/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete repository
+      parameters:
+      - description: repository_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Delete repository
+      tags:
+      - repository
+    get:
+      consumes:
+      - application/json
+      description: get repository by id
+      parameters:
+      - description: repository_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Repository'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get repository by id
+      tags:
+      - repository
+    put:
+      consumes:
+      - application/json
+      description: get repository
+      parameters:
+      - description: repository_id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: repository
+        in: body
+        name: repository
+        schema:
+          $ref: '#/definitions/models.UpdateRepository'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Repository'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Update repository
+      tags:
+      - repository
+  /staff:
+    post:
+      consumes:
+      - application/json
+      description: create a new staff
+      parameters:
+      - description: staff
+        in: body
+        name: staff
+        schema:
+          $ref: '#/definitions/models.CreateStaff'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Staff'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Create a new staff
+      tags:
+      - staff
+  /staff/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete staff
+      parameters:
+      - description: staff_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Delete staff
+      tags:
+      - staff
+    get:
+      consumes:
+      - application/json
+      description: get staff by id
+      parameters:
+      - description: staff_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Staff'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get staff by id
+      tags:
+      - staff
+    patch:
+      consumes:
+      - application/json
+      description: update staff password
+      parameters:
+      - description: staff_id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: staff
+        in: body
+        name: staff
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateStaffPassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Update staff password
+      tags:
+      - staff
+    put:
+      consumes:
+      - application/json
+      description: get staff
+      parameters:
+      - description: staff_id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: staff
+        in: body
+        name: staff
+        schema:
+          $ref: '#/definitions/models.UpdateStaff'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Staff'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Update staff
+      tags:
+      - staff
+  /staffs:
+    get:
+      consumes:
+      - application/json
+      description: get staff list
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      - description: search
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.StaffsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get staff list
+      tags:
+      - staff
+  /stafftarif:
+    post:
+      consumes:
+      - application/json
+      description: create a new stafftarif
+      parameters:
+      - description: staffTarif
+        in: body
+        name: staffTarif
+        schema:
+          $ref: '#/definitions/models.CreateStaffTarif'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.StaffTarif'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Create a new stafftarif
+      tags:
+      - stafftarif
+  /stafftarif/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete stafftarif
+      parameters:
+      - description: stafftarif_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Delete stafftarif
+      tags:
+      - stafftarif
+    get:
+      consumes:
+      - application/json
+      description: get stafftarif by id
+      parameters:
+      - description: stafftarif_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.StaffTarif'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get stafftarif by id
+      tags:
+      - stafftarif
+    put:
+      consumes:
+      - application/json
+      description: get stafftarif
+      parameters:
+      - description: stafftarif_id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: stafftarif
+        in: body
+        name: stafftarif
+        schema:
+          $ref: '#/definitions/models.UpdateStaffTarif'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.StaffTarif'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Update stafftarif
+      tags:
+      - stafftarif
+  /stafftarifs:
+    get:
+      consumes:
+      - application/json
+      description: get stafftarif list
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      - description: search
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.StaffTarifResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get stafftarif list
+      tags:
+      - stafftarif
+swagger: "2.0"

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"teamProject/api"
@@ -11,7 +12,7 @@ import (
 func main() {
 	cfg := config.Load()
 
-	store, err := postgres.New(cfg)
+	store, err := postgres.New(context.Background(), cfg)
 	if err != nil {
 		log.Fatalf("error while connecting to db: %v", err)
 	}

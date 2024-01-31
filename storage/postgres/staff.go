@@ -1,7 +1,8 @@
+// postgres/staff_repo.go
 package postgres
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"log"
 	"teamProject/api/models"
@@ -9,13 +10,14 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type staffRepo struct {
-	DB *sql.DB
+	DB *pgxpool.Pool
 }
 
-func NewStaffRepo(DB *sql.DB) storage.IStaffRepo {
+func NewStaffRepo(DB *pgxpool.Pool) storage.IStaffRepo {
 	return &staffRepo{
 		DB: DB,
 	}
@@ -25,16 +27,14 @@ func (s *staffRepo) Create(staff models.CreateStaff) (string, error) {
 	id := uuid.New().String()
 	createdAt := time.Now()
 
-	fmt.Println(staff.BranchID)
-
 	birthDate, err := time.Parse("2006-01-02", staff.BirthDate)
 	if err != nil {
 		log.Println("Error parsing birth date:", err)
 		return "", err
 	}
-	age := int(time.Since(birthDate).Hours() / 24 / 365)
+	age := uint(time.Since(birthDate).Hours() / 24 / 365)
 
-	if _, err := s.DB.Exec(`INSERT INTO staffs 
+	if _, err := s.DB.Exec(context.Background(), `INSERT INTO staffs 
 		(id, branch_id, tariff_id, staff_type, name, balance, age, birth_date, login, password, created_at)
 			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
 		id,
@@ -59,7 +59,7 @@ func (s *staffRepo) StaffByID(id models.PrimaryKey) (models.Staff, error) {
 	staff := models.Staff{}
 	query := `SELECT id, branch_id, tariff_id, staff_type, name, balance, age, birth_date, login, created_at, updated_at FROM staffs WHERE id = $1`
 
-	err := s.DB.QueryRow(query, id.ID).Scan(
+	err := s.DB.QueryRow(context.Background(), query, id.ID).Scan(
 		&staff.ID,
 		&staff.BranchID,
 		&staff.TariffID,
@@ -91,7 +91,7 @@ func (s *staffRepo) GetStaffTList(request models.GetListRequest) (models.StaffsR
 		countQuery += fmt.Sprintf(` WHERE name ILIKE '%%%s%%'`, request.Search)
 	}
 
-	err := s.DB.QueryRow(countQuery).Scan(&count)
+	err := s.DB.QueryRow(context.Background(), countQuery).Scan(&count)
 	if err != nil {
 		log.Println("Error while scanning count of staffs:", err)
 		return models.StaffsResponse{}, err
@@ -103,7 +103,7 @@ func (s *staffRepo) GetStaffTList(request models.GetListRequest) (models.StaffsR
 	}
 	query += ` LIMIT $1 OFFSET $2`
 
-	rows, err := s.DB.Query(query, request.Limit, (request.Page-1)*request.Limit)
+	rows, err := s.DB.Query(context.Background(), query, request.Limit, (request.Page-1)*request.Limit)
 	if err != nil {
 		log.Println("Error while querying staff :", err)
 		return models.StaffsResponse{}, err
@@ -141,7 +141,7 @@ func (s *staffRepo) GetStaffTList(request models.GetListRequest) (models.StaffsR
 func (s *staffRepo) UpdateStaff(staff models.UpdateStaff) (string, error) {
 	query := `UPDATE staffs SET branch_id = $1, tariff_id = $2, staff_type = $3, name = $4, balance = $5, login = $6, updated_at = NOW() WHERE id = $7`
 
-	_, err := s.DB.Exec(query,
+	_, err := s.DB.Exec(context.Background(), query,
 		&staff.BranchID,
 		&staff.TariffID,
 		&staff.StaffType,
@@ -161,7 +161,7 @@ func (s *staffRepo) UpdateStaff(staff models.UpdateStaff) (string, error) {
 func (s *staffRepo) DeleteStaff(id string) error {
 	query := `UPDATE staffs SET deleted_at = NOW() WHERE id = $1`
 
-	_, err := s.DB.Exec(query, id)
+	_, err := s.DB.Exec(context.Background(), query, id)
 	if err != nil {
 		log.Println("Error while deleting Staff :", err)
 		return err
@@ -177,7 +177,7 @@ func (s *staffRepo) GetPassword(id string) (string, error) {
 		select password from staffs 
 		                where  id = $1`
 
-	if err := s.DB.QueryRow(query, id).Scan(&password); err != nil {
+	if err := s.DB.QueryRow(context.Background(), query, id).Scan(&password); err != nil {
 		fmt.Println("Error while scanning password from users", err.Error())
 		return "", err
 	}
@@ -191,7 +191,7 @@ func (s *staffRepo) UpdatePassword(request models.UpdateStaffPassword) error {
 				set password = $1
 					where id = $2`
 
-	if _, err := s.DB.Exec(query, request.NewPassword, request.ID); err != nil {
+	if _, err := s.DB.Exec(context.Background(), query, request.NewPassword, request.ID); err != nil {
 		fmt.Println("error while updating password for staff", err.Error())
 		return err
 	}
