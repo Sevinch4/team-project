@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
+	_ "github.com/lib/pq"
 	"teamProject/config"
 	"teamProject/storage"
 )
@@ -31,29 +32,44 @@ func New(ctx context.Context, cfg config.Config) (storage.IStorage, error) {
 		fmt.Println("error is while connecting to db", err.Error())
 		return nil, err
 	}
-	return Store{Pool: pool}, nil
+	return &Store{
+		Pool: pool,
+	}, nil
 }
 
-func (s Store) Close() {
+func (s *Store) Close() {
 	s.Pool.Close()
 }
 
-func (s Store) Category() storage.ICategory {
+func (s *Store) StaffTarif() storage.IStaffTarifRepo {
+	return NewStaffTarifRepo(s.Pool)
+}
+
+func (s *Store) Category() storage.ICategory {
 	return NewCategoryRepo(s.Pool)
 }
 
-func (s Store) Product() storage.IProducts {
+func (s *Store) Product() storage.IProducts {
 	return NewProductRepo(s.Pool)
 }
 
-func (s Store) Branch() storage.IBranchStorage {
+func (s *Store) Branch() storage.IBranchStorage {
 	return NewBranchRepo(s.Pool)
 }
 
-func (s Store) Sale() storage.ISaleStorage {
+func (s *Store) Sale() storage.ISaleStorage {
 	return NewSaleRepo(s.Pool)
 }
 
-func (s Store) Transaction() storage.ITransactionStorage {
+func (s *Store) Transaction() storage.ITransactionStorage {
 	return NewTransactionRepo(s.Pool)
+
+}
+
+func (s *Store) Staff() storage.IStaffRepo {
+	return NewStaffRepo(s.Pool)
+}
+
+func (s *Store) Repository() storage.IRepositoryRepo {
+	return NewRepositoryRepo(s.Pool)
 }

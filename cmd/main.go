@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	_ "github.com/lib/pq"
 	"log"
 	"teamProject/api"
 	"teamProject/config"
@@ -15,15 +14,13 @@ func main() {
 
 	store, err := postgres.New(context.Background(), cfg)
 	if err != nil {
-		log.Fatalln("error is while connecting to db", err.Error())
-		return
+		log.Fatalf("error while connecting to db: %v", err)
 	}
-
 	defer store.Close()
 
 	server := api.New(store)
 
-	if err = server.Run("localhost:8080"); err != nil {
-		fmt.Println("error is while running", err.Error())
+	if err := server.Run("localhost:8080"); err != nil {
+		fmt.Printf("error while running server: %v\n", err)
 	}
 }

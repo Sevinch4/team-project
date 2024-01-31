@@ -36,11 +36,31 @@ func New(storage storage.IStorage) *gin.Engine {
 	r.PUT("/branch/:id", h.UpdateBranch)
 	r.DELETE("/branch/:id", h.DeleteBranch)
 
+	r.POST("/repository", h.CreateRepository)
+	r.GET("/repository/:id", h.GetRepository)
+	r.GET("/repositories", h.GetRepositoryList)
+	r.PUT("/repository/:id", h.UpdateRepository)
+	r.DELETE("/repository/:id", h.DeleteRepository)
+
 	r.POST("/sale", h.CreateSale)
 	r.GET("/sale/:id", h.GetSale)
 	r.GET("/sales", h.GetSaleList)
 	r.PUT("/sale/:id", h.UpdateSale)
 	r.DELETE("/sale/:id", h.DeleteSale)
+
+	//basket bolsh kere
+
+	r.POST("/stafftarif", h.CreateStaffTarif)
+	r.GET("/stafftarif/:id", h.GetStaffTarif)
+	r.GET("/stafftarifs", h.GetStaffTarifList)
+	r.PUT("/stafftarif/:id", h.UpdateStaffTarif)
+	r.DELETE("/stafftarif/:id", h.DeleteStaffTarif)
+
+	r.POST("/staff", h.CreateStaff)
+	r.GET("/staff/:id", h.GetStaff)
+	r.GET("/staffs", h.GetStaffList)
+	r.PUT("/staff/:id", h.UpdateStaff)
+	r.DELETE("/staff/:id", h.DeleteStaff)
 
 	r.POST("/transaction", h.CreateTransaction)
 	r.GET("/transaction/:id", h.GetTransaction)
@@ -48,8 +68,9 @@ func New(storage storage.IStorage) *gin.Engine {
 	r.PUT("/transaction/:id", h.UpdateTransaction)
 	r.DELETE("/transaction/:id", h.DeleteTransaction)
 
+	//repository-transaction bolsh kere
+
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run(":8080")
 	return r
-
 }
