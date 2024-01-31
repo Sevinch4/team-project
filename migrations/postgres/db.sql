@@ -101,7 +101,7 @@ CREATE TABLE sales (
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     deleted_at TIMESTAMP DEFAULT NULL
-    );
+);
 
 CREATE TABLE baskets (
     id UUID PRIMARY KEY NOT NULL,
@@ -112,16 +112,16 @@ CREATE TABLE baskets (
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     deleted_at TIMESTAMP DEFAULT NULL
-)
+);
 
-CREATE TABLE repository_transaction (
+CREATE TABLE repository_transactions (
     id UUID PRIMARY KEY NOT NULL,
     staff_id UUID REFERENCES staffs(id),
     product_id UUID REFERENCES products(id),
-    storage_trunsaction_type storage_trunsaction_type_enum,
+    storage_transaction_type storage_transaction_type_enum,
     price int, 
     quantity int DEFAULT 0,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     deleted_at TIMESTAMP DEFAULT NULL
-)
+);
