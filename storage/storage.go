@@ -34,3 +34,7 @@ type IRepositoryRepo interface {
 	Update(models.UpdateRepository) (string, error)
 	Delete(string) error
 }
+
+type IBasketRepo interface {
+	
+}

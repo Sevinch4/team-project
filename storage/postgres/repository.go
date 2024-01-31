@@ -12,17 +12,17 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type repositoryfRepo struct {
+type repositoryRepo struct {
 	DB *pgxpool.Pool
 }
 
 func NewRepositoryRepo(DB *pgxpool.Pool) storage.IRepositoryRepo {
-	return &repositoryfRepo{
+	return &repositoryRepo{
 		DB: DB,
 	}
 }
 
-func (s *repositoryfRepo) Create(repository models.CreateRepository) (string, error) {
+func (s *repositoryRepo) Create(repository models.CreateRepository) (string, error) {
     id := uuid.New().String()
     createdAt := time.Now()
 
@@ -42,7 +42,7 @@ func (s *repositoryfRepo) Create(repository models.CreateRepository) (string, er
     return id, nil
 }
 
-func (s *repositoryfRepo) GetByID(id models.PrimaryKey) (models.Repository, error) {
+func (s *repositoryRepo) GetByID(id models.PrimaryKey) (models.Repository, error) {
 	repository := models.Repository{}
 	query := `SELECT id, product_id, branch_id, count, created_at, updated_at, deleted_at FROM repositories WHERE id = $1`
 	err := s.DB.QueryRow(context.Background(), query, id.ID).Scan(
@@ -61,7 +61,7 @@ func (s *repositoryfRepo) GetByID(id models.PrimaryKey) (models.Repository, erro
 	return repository, nil
 }
 
-func (s *repositoryfRepo) GetList(request models.GetListRequest) (models.RepositoriesResponse, error) {
+func (s *repositoryRepo) GetList(request models.GetListRequest) (models.RepositoriesResponse, error) {
 	var (
 		repositories = []models.Repository{}
 		count       int
@@ -115,7 +115,7 @@ func (s *repositoryfRepo) GetList(request models.GetListRequest) (models.Reposit
 	}, nil
 }
 
-func (s *repositoryfRepo) Update(repository models.UpdateRepository) (string, error) {
+func (s *repositoryRepo) Update(repository models.UpdateRepository) (string, error) {
 	query := `UPDATE repositories SET branch_id = $1, product_id = $2, count = $3 WHERE id = $4`
 
 	_, err := s.DB.Exec(context.Background(), query,
@@ -132,7 +132,7 @@ func (s *repositoryfRepo) Update(repository models.UpdateRepository) (string, er
 	return repository.ID, nil
 }
 
-func (s *repositoryfRepo) Delete(id string) error {
+func (s *repositoryRepo) Delete(id string) error {
 	query := `UPDATE repositories SET deleted_at = NOW() WHERE id = $1`
 
 	_, err := s.DB.Exec(context.Background(), query, id)
