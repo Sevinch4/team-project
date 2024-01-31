@@ -27,8 +27,7 @@ func (t transactionRepo) Create(trans models.CreateTransaction) (string, error) 
 		trans.StaffID,
 		trans.TransactionType,
 		trans.SourceType,
-		trans.FromAmount,
-		trans.ToAmount,
+		trans.Amount,
 		trans.Description); err != nil {
 		fmt.Println("error is while inserting data", err.Error())
 		return "", err
@@ -47,8 +46,7 @@ func (t transactionRepo) GetByID(id string) (models.Transaction, error) {
 		&trans.StaffID,
 		&trans.TransactionType,
 		&trans.SourceType,
-		&trans.FromAmount,
-		&trans.ToAmount,
+		&trans.Amount,
 		&trans.Description,
 		&trans.CreatedAt,
 		&trans.UpdatedAt); err != nil {
@@ -100,8 +98,7 @@ func (t transactionRepo) GetList(request models.GetListRequest) (models.Transact
 			&trans.StaffID,
 			&trans.TransactionType,
 			&trans.SourceType,
-			&trans.FromAmount,
-			&trans.ToAmount,
+			&trans.Amount,
 			&trans.Description,
 			&trans.CreatedAt,
 			&trans.UpdatedAt); err != nil {
@@ -125,8 +122,7 @@ func (t transactionRepo) Update(transaction models.UpdateTransaction) (string, e
 		&transaction.StaffID,
 		&transaction.TransactionType,
 		&transaction.SourceType,
-		&transaction.FromAmount,
-		&transaction.ToAmount,
+		&transaction.Amount,
 		&transaction.Description,
 		&transaction.ID); err != nil {
 		fmt.Println("error is while updating transaction", err.Error())

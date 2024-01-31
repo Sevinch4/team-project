@@ -10,8 +10,7 @@ type Transaction struct {
 	StaffID         string    `json:"staff_id"`
 	TransactionType string    `json:"transaction_type"`
 	SourceType      string    `json:"source_type"`
-	FromAmount      float32   `json:"from_amount"`
-	ToAmount        float32   `json:"to_amount"`
+	Amount          float32   `json:"amount"`
 	Description     string    `json:"description"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
@@ -23,8 +22,7 @@ type CreateTransaction struct {
 	StaffID         string  `json:"staff_id"`
 	TransactionType string  `json:"transaction_type"`
 	SourceType      string  `json:"source_type"`
-	FromAmount      float32 `json:"from_amount"`
-	ToAmount        float32 `json:"to_amount"`
+	Amount          float32 `json:"amount"`
 	Description     string  `json:"description"`
 }
 
@@ -34,8 +32,7 @@ type UpdateTransaction struct {
 	StaffID         string    `json:"staff_id"`
 	TransactionType string    `json:"transaction_type"`
 	SourceType      string    `json:"source_type"`
-	FromAmount      float32   `json:"from_amount"`
-	ToAmount        float32   `json:"to_amount"`
+	Amount          float32   `json:"amount"`
 	Description     string    `json:"description"`
 	UpdatedAt       time.Time `json:"-"`
 }

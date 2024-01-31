@@ -1483,11 +1483,11 @@ const docTemplate = `{
         "models.CreateTransaction": {
             "type": "object",
             "properties": {
+                "amount": {
+                    "type": "number"
+                },
                 "description": {
                     "type": "string"
-                },
-                "from_amount": {
-                    "type": "number"
                 },
                 "sale_id": {
                     "type": "string"
@@ -1497,9 +1497,6 @@ const docTemplate = `{
                 },
                 "staff_id": {
                     "type": "string"
-                },
-                "to_amount": {
-                    "type": "number"
                 },
                 "transaction_type": {
                     "type": "string"
@@ -1596,14 +1593,14 @@ const docTemplate = `{
         "models.Transaction": {
             "type": "object",
             "properties": {
+                "amount": {
+                    "type": "number"
+                },
                 "created_at": {
                     "type": "string"
                 },
                 "description": {
                     "type": "string"
-                },
-                "from_amount": {
-                    "type": "number"
                 },
                 "id": {
                     "type": "string"
@@ -1616,9 +1613,6 @@ const docTemplate = `{
                 },
                 "staff_id": {
                     "type": "string"
-                },
-                "to_amount": {
-                    "type": "number"
                 },
                 "transaction_type": {
                     "type": "string"
@@ -1667,9 +1661,6 @@ const docTemplate = `{
         "models.UpdateProduct": {
             "type": "object",
             "properties": {
-                "barcode": {
-                    "type": "integer"
-                },
                 "category_id": {
                     "type": "string"
                 },
@@ -1710,11 +1701,11 @@ const docTemplate = `{
         "models.UpdateTransaction": {
             "type": "object",
             "properties": {
+                "amount": {
+                    "type": "number"
+                },
                 "description": {
                     "type": "string"
-                },
-                "from_amount": {
-                    "type": "number"
                 },
                 "sale_id": {
                     "type": "string"
@@ -1724,9 +1715,6 @@ const docTemplate = `{
                 },
                 "staff_id": {
                     "type": "string"
-                },
-                "to_amount": {
-                    "type": "number"
                 },
                 "transaction_type": {
                     "type": "string"

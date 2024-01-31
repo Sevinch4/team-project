@@ -87,18 +87,16 @@ definitions:
     type: object
   models.CreateTransaction:
     properties:
+      amount:
+        type: number
       description:
         type: string
-      from_amount:
-        type: number
       sale_id:
         type: string
       source_type:
         type: string
       staff_id:
         type: string
-      to_amount:
-        type: number
       transaction_type:
         type: string
     type: object
@@ -161,12 +159,12 @@ definitions:
     type: object
   models.Transaction:
     properties:
+      amount:
+        type: number
       created_at:
         type: string
       description:
         type: string
-      from_amount:
-        type: number
       id:
         type: string
       sale_id:
@@ -175,8 +173,6 @@ definitions:
         type: string
       staff_id:
         type: string
-      to_amount:
-        type: number
       transaction_type:
         type: string
       updated_at:
@@ -207,8 +203,6 @@ definitions:
     type: object
   models.UpdateProduct:
     properties:
-      barcode:
-        type: integer
       category_id:
         type: string
       name:
@@ -235,18 +229,16 @@ definitions:
     type: object
   models.UpdateTransaction:
     properties:
+      amount:
+        type: number
       description:
         type: string
-      from_amount:
-        type: number
       sale_id:
         type: string
       source_type:
         type: string
       staff_id:
         type: string
-      to_amount:
-        type: number
       transaction_type:
         type: string
     type: object

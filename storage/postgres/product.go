@@ -57,8 +57,7 @@ func (p productRepo) GetList(request models.GetListRequest) (models.ProductRespo
 	)
 	countQuery = `select count(1) from products where deleted_at is null `
 	if search != "" {
-		countQuery += fmt.Sprintf(` and (name ilike '%%%s%%' or CAST(price as text) ilike '%%%s%%' 
-											or CAST(barcode as text) ilike '%%%s%%')`, search, search, search)
+		countQuery += fmt.Sprintf(` and (name ilike '%%%s%%' or CAST(barcode as text) ilike '%%%s%%')`, search, search)
 	}
 	if err := p.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
 		fmt.Println("error is while scanning count", err.Error())
@@ -68,8 +67,7 @@ func (p productRepo) GetList(request models.GetListRequest) (models.ProductRespo
 	query = `select  id, name, price, barcode, category_id, created_at, updated_at 
 							from products where deleted_at is null `
 	if search != "" {
-		query += fmt.Sprintf(` and (name ilike '%%%s%%' or CAST(price as text) ilike '%%%s%%' 
-											or CAST(barcode as text) ilike '%%%s%%') `, search, search, search)
+		query += fmt.Sprintf(` and (name ilike '%%%s%%' or CAST(barcode as text) ilike '%%%s%%') `, search, search)
 	}
 
 	query += ` LIMIT $1 OFFSET $2`
@@ -102,12 +100,11 @@ func (p productRepo) GetList(request models.GetListRequest) (models.ProductRespo
 }
 
 func (p productRepo) Update(product models.UpdateProduct) (string, error) {
-	query := `update products set name = $1, price = $2, barcode = $3, category_id = $4, updated_at = now() 
-									where id = $5`
+	query := `update products set name = $1, price = $2, category_id = $3, updated_at = now() 
+									where id = $4`
 	if _, err := p.db.Exec(context.Background(), query,
 		&product.Name,
 		&product.Price,
-		&product.Barcode,
 		&product.CategoryID,
 		&product.ID); err != nil {
 		fmt.Println("error is while updating", err.Error())

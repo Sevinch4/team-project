@@ -24,7 +24,6 @@ type UpdateProduct struct {
 	ID         string    `json:"-"`
 	Name       string    `json:"name"`
 	Price      int       `json:"price"`
-	Barcode    int       `json:"barcode"`
 	CategoryID string    `json:"category_id"`
 	UpdatedAt  time.Time `json:"-"`
 }
