@@ -6,6 +6,7 @@ type IStorage interface {
 	Close()
 	StaffTarif() IStaffTarifRepo
 	Staff() IStaffRepo
+	Repository() IRepositoryRepo
 }
 
 type IStaffTarifRepo interface {
@@ -24,4 +25,12 @@ type IStaffRepo interface {
 	DeleteStaff(id string) error
 	GetPassword(id string) (string, error)
 	UpdatePassword(models.UpdateStaffPassword) error
+}
+
+type IRepositoryRepo interface {
+	Create(models.CreateRepository) (string, error)
+	GetByID(models.PrimaryKey) (models.Repository, error)
+	GetList(models.GetListRequest) (models.RepositoriesResponse, error)
+	Update(models.UpdateRepository) (string, error)
+	Delete(string) error
 }

@@ -8,6 +8,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CreateStaffTarif godoc
+// @Router       /stafftarif [POST]
+// @Summary      Create a new stafftarif
+// @Description  create a new stafftarif
+// @Tags         stafftarif
+// @Accept       json
+// @Produce      json
+// @Param 		 staffTarif body models.CreateStaffTarif false "staffTarif"
+// @Success      200  {object}  models.StaffTarif
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h *Handler) CreateStaffTarif(c *gin.Context) {
 	staffTarif := models.CreateStaffTarif{}
 
@@ -31,6 +43,18 @@ func (h *Handler) CreateStaffTarif(c *gin.Context) {
 	handleResponse(c, "", http.StatusCreated, createdStaffTarif)
 }
 
+// GetStaffTarif godoc
+// @Router       /stafftarif/{id} [GET]
+// @Summary      Get stafftarif by id
+// @Description  get stafftarif by id
+// @Tags         stafftarif
+// @Accept       json
+// @Produce      json
+// @Param 		 id path string true "stafftarif_id"
+// @Success      200  {object}  models.StaffTarif
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h *Handler) GetStaffTarif(c *gin.Context) {
 	uid := c.Param("id")
 
@@ -43,6 +67,20 @@ func (h *Handler) GetStaffTarif(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, staffTarif)
 }
 
+// GetStaffTarifList godoc
+// @Router       /stafftarifs [GET]
+// @Summary      Get stafftarif list
+// @Description  get stafftarif list
+// @Tags         stafftarif
+// @Accept       json
+// @Produce      json
+// @Param 		 page query string false "page"
+// @Param 		 limit query string false "limit"
+// @Param 		 search query string false "search"
+// @Success      200  {object}  models.StaffTarifResponse
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h *Handler) GetStaffTarifList(c *gin.Context) {
 	var (
 		page, limit int
@@ -78,6 +116,19 @@ func (h *Handler) GetStaffTarifList(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, response)
 }
 
+// UpdateStaffTarif godoc
+// @Router       /stafftarif/{id} [PUT]
+// @Summary      Update stafftarif
+// @Description  get stafftarif
+// @Tags         stafftarif
+// @Accept       json
+// @Produce      json
+// @Param 		 id path string true "stafftarif_id"
+// @Param 		 stafftarif body models.UpdateStaffTarif false "stafftarif"
+// @Success      200  {object}  models.StaffTarif
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h *Handler) UpdateStaffTarif(c *gin.Context) {
 	uid := c.Param("id")
 
@@ -102,6 +153,18 @@ func (h *Handler) UpdateStaffTarif(c *gin.Context) {
 	handleResponse(c, "", http.StatusOK, updatedStaffTarif)
 }
 
+// DeleteStaffTarif godoc
+// @Router       /stafftarif/{id} [DELETE]
+// @Summary      Delete stafftarif
+// @Description  delete stafftarif
+// @Tags         stafftarif
+// @Accept       json
+// @Produce      json
+// @Param 		 id path string true "stafftarif_id"
+// @Success      200  {object}  models.Response
+// @Failure      400  {object}  models.Response
+// @Failure      404  {object}  models.Response
+// @Failure      500  {object}  models.Response
 func (h *Handler) DeleteStaffTarif(c *gin.Context) {
 	uid := c.Param("id")
 
