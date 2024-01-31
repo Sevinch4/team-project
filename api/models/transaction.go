@@ -10,7 +10,7 @@ type Transaction struct {
 	StaffID         string    `json:"staff_id"`
 	TransactionType string    `json:"transaction_type"`
 	SourceType      string    `json:"source_type"`
-	Amount          float32   `json:"amount"`
+	Amount          float64   `json:"amount"`
 	Description     string    `json:"description"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
@@ -22,7 +22,7 @@ type CreateTransaction struct {
 	StaffID         string  `json:"staff_id"`
 	TransactionType string  `json:"transaction_type"`
 	SourceType      string  `json:"source_type"`
-	Amount          float32 `json:"amount"`
+	Amount          float64 `json:"amount"`
 	Description     string  `json:"description"`
 }
 
@@ -32,7 +32,7 @@ type UpdateTransaction struct {
 	StaffID         string    `json:"staff_id"`
 	TransactionType string    `json:"transaction_type"`
 	SourceType      string    `json:"source_type"`
-	Amount          float32   `json:"amount"`
+	Amount          float64   `json:"amount"`
 	Description     string    `json:"description"`
 	UpdatedAt       time.Time `json:"-"`
 }
@@ -40,4 +40,11 @@ type UpdateTransaction struct {
 type TransactionResponse struct {
 	Transactions []Transaction
 	Count        int
+}
+
+type TransactionGetListRequest struct {
+	Page       int     `json:"page"`
+	Limit      int     `json:"limit"`
+	FromAmount float64 `json:"from_amount"`
+	ToAmount   float64 `json:"to_amount"`
 }

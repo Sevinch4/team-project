@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"strconv"
 	"teamProject/api/models"
 	"teamProject/storage"
 )
@@ -20,8 +21,8 @@ func NewTransactionRepo(db *pgxpool.Pool) storage.ITransactionStorage {
 func (t transactionRepo) Create(trans models.CreateTransaction) (string, error) {
 	id := uuid.New()
 	query := `insert into transactions 
-    					(id, sale_id, staff_id, transaction_type, source_type, from_amount, to_amount, description) 
-						values ($1, $2, $3, $4, $5, $6, $7, $8)`
+    					(id, sale_id, staff_id, transaction_type, source_type, amount, description) 
+						values ($1, $2, $3, $4, $5, $6, $7)`
 	if _, err := t.db.Exec(context.Background(), query, id,
 		trans.SaleID,
 		trans.StaffID,
@@ -37,7 +38,7 @@ func (t transactionRepo) Create(trans models.CreateTransaction) (string, error) 
 
 func (t transactionRepo) GetByID(id string) (models.Transaction, error) {
 	trans := models.Transaction{}
-	query := `select id, sale_id, staff_id, transaction_type, source_type, from_amount, to_amount,
+	query := `select id, sale_id, staff_id, transaction_type, source_type, amount,
        						description, created_at, updated_at
 							from transactions where deleted_at is null and id = $1`
 	if err := t.db.QueryRow(context.Background(), query, id).Scan(
@@ -56,31 +57,41 @@ func (t transactionRepo) GetByID(id string) (models.Transaction, error) {
 	return trans, nil
 }
 
-func (t transactionRepo) GetList(request models.GetListRequest) (models.TransactionResponse, error) {
+func (t transactionRepo) GetList(request models.TransactionGetListRequest) (models.TransactionResponse, error) {
 	var (
 		page              = request.Page
 		offset            = (page - 1) * request.Limit
 		transactions      = []models.Transaction{}
-		search            = request.Search
+		fromAmount        = request.FromAmount
+		toAmount          = request.ToAmount
 		count             = 0
 		query, countQuery string
 	)
 
 	countQuery = `select count(1) from transactions where deleted_at is null `
-	if search != "" {
-		countQuery += fmt.Sprintf(` and CAST(from_amount AS TEXT) ilike '%%%s%%' or 
-											CAST(to_amount AS TEXT) ilike '%%%s%%'`, search, search)
+	if fromAmount != 0 && toAmount != 0 {
+		countQuery += fmt.Sprintf(` and amount between %f and %f`, fromAmount, toAmount)
+	} else if fromAmount != 0 {
+		countQuery += ` and amount = ` + strconv.FormatFloat(fromAmount, 'f', 2, 64)
+	} else {
+		countQuery += ` and amount = ` + strconv.FormatFloat(toAmount, 'f', 2, 64)
+
 	}
 	if err := t.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
 		fmt.Println("error is while scanning row", err.Error())
 		return models.TransactionResponse{}, err
 	}
 
-	query = `select id, sale_id, staff_id, transaction_type, source_type, from_amount, to_amount,
+	query = `select id, sale_id, staff_id, transaction_type, source_type, amount,
        						description, created_at, updated_at from transactions where deleted_at is null `
-	if search != "" {
-		query += fmt.Sprintf(` and CAST(from_amount AS TEXT) ilike '%%%s%%' or 
-											CAST(to_amount AS TEXT) ilike '%%%s%%' `, search, search)
+
+	if fromAmount != 0 && toAmount != 0 {
+		query += fmt.Sprintf(` and amount between %f and %f`, fromAmount, toAmount)
+	} else if fromAmount != 0 {
+		query += ` and amount = ` + strconv.FormatFloat(fromAmount, 'f', 2, 64)
+	} else {
+		query += ` and amount = ` + strconv.FormatFloat(toAmount, 'f', 2, 64)
+
 	}
 
 	query += ` LIMIT $1 OFFSET $2`
@@ -114,9 +125,9 @@ func (t transactionRepo) GetList(request models.GetListRequest) (models.Transact
 }
 
 func (t transactionRepo) Update(transaction models.UpdateTransaction) (string, error) {
-	query := `update transactions set sale_id = $1, staff_id = $2, transaction_type = $3, source_type = $4,from_amount = $5, to_amount = $6,
-								description = $7, updated_at = now() 
-                    			where id = $8`
+	query := `update transactions set sale_id = $1, staff_id = $2, transaction_type = $3, source_type = $4, amount = $5,
+								description = $6, updated_at = now() 
+                    			where id = $7`
 	if _, err := t.db.Exec(context.Background(), query,
 		&transaction.SaleID,
 		&transaction.StaffID,

@@ -32,3 +32,10 @@ type ProductResponse struct {
 	Products []Product
 	Count    int
 }
+
+type ProductGetListRequest struct {
+	Page    int    `json:"page"`
+	Limit   int    `json:"limit"`
+	Name    string `json:"name"`
+	Barcode int    `json:"barcode"`
+}

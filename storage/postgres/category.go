@@ -17,10 +17,10 @@ func NewCategoryRepo(db *pgxpool.Pool) storage.ICategory {
 	return categoryRepo{db: db}
 }
 
-func (c categoryRepo) Create(category models.CreateCategory) (string, error) {
+func (c categoryRepo) Create(ctx context.Context, category models.CreateCategory) (string, error) {
 	id := uuid.New()
 	query := `insert into categories (id, name, parent_id) values($1, $2, $3)`
-	if _, err := c.db.Exec(context.Background(), query, id, category.Name, category.ParentID); err != nil {
+	if _, err := c.db.Exec(ctx, query, id, category.Name, category.ParentID); err != nil {
 		fmt.Println("error is while inserting data", err.Error())
 		return "", err
 	}

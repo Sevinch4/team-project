@@ -780,8 +780,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "search",
-                        "name": "search",
+                        "description": "name",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "barcode",
+                        "name": "barcode",
                         "in": "query"
                     }
                 ],
@@ -1312,8 +1318,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "search",
-                        "name": "search",
+                        "description": "from-amount",
+                        "name": "from-amount",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "to-amount",
+                        "name": "to-amount",
                         "in": "query"
                     }
                 ],

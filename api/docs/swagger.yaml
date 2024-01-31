@@ -747,10 +747,14 @@ paths:
         in: query
         name: limit
         type: string
-      - description: search
+      - description: name
         in: query
-        name: search
+        name: name
         type: string
+      - description: barcode
+        in: query
+        name: barcode
+        type: integer
       produces:
       - application/json
       responses:
@@ -1097,9 +1101,13 @@ paths:
         in: query
         name: limit
         type: string
-      - description: search
+      - description: from-amount
         in: query
-        name: search
+        name: from-amount
+        type: string
+      - description: to-amount
+        in: query
+        name: to-amount
         type: string
       produces:
       - application/json

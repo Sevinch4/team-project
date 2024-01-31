@@ -74,7 +74,8 @@ func (h Handler) GetProduct(c *gin.Context) {
 // @Produce      json
 // @Param 		 page query string false "page"
 // @Param 		 limit query string false "limit"
-// @Param 		 search query string false "search"
+// @Param 		 name query string false "name"
+// @Param 		 barcode query int false "barcode"
 // @Success      200  {object}  models.ProductResponse
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
@@ -82,7 +83,8 @@ func (h Handler) GetProduct(c *gin.Context) {
 func (h Handler) GetProductList(c *gin.Context) {
 	var (
 		page, limit int
-		search      string
+		name        string
+		barcode     int
 		err         error
 	)
 
@@ -100,11 +102,19 @@ func (h Handler) GetProductList(c *gin.Context) {
 		return
 	}
 
-	search = c.Query("search")
-	products, err := h.storage.Product().GetList(models.GetListRequest{
-		Page:   page,
-		Limit:  limit,
-		Search: search,
+	name = c.Query("search")
+
+	barcode, err = strconv.Atoi(c.DefaultQuery("barcode", "0"))
+	if err != nil {
+		handleResponse(c, "error is while converting barcode", http.StatusBadRequest, err.Error())
+		return
+	}
+
+	products, err := h.storage.Product().GetList(models.ProductGetListRequest{
+		Page:    page,
+		Limit:   limit,
+		Name:    name,
+		Barcode: barcode,
 	})
 	if err != nil {
 		handleResponse(c, "error is while getting list", http.StatusInternalServerError, err.Error())

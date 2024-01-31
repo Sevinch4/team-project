@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"math"
 	"net/http"
 	"strconv"
 	"teamProject/api/models"
@@ -74,7 +76,8 @@ func (h Handler) GetTransaction(c *gin.Context) {
 // @Produce      json
 // @Param		 page query string false "page"
 // @Param		 limit query string false "limit"
-// @Param		 search query string false "search"
+// @Param		 from-amount query string false "from-amount"
+// @Param		 to-amount query string false "to-amount"
 // @Success      200  {object}  models.TransactionResponse
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
@@ -82,7 +85,8 @@ func (h Handler) GetTransaction(c *gin.Context) {
 func (h Handler) GetTransactionList(c *gin.Context) {
 	var (
 		page, limit int
-		search      string
+		fromAmount  float64
+		toAmount    float64
 		err         error
 	)
 
@@ -100,12 +104,25 @@ func (h Handler) GetTransactionList(c *gin.Context) {
 		return
 	}
 
-	search = c.Query("search")
+	fromAmountStr := c.DefaultQuery("from-amount", "0")
+	fromAmount, err = strconv.ParseFloat(fromAmountStr, 64)
+	if err != nil {
+		handleResponse(c, "error is while converting from amount", http.StatusBadRequest, err.Error())
+		return
+	}
 
-	transactions, err := h.storage.Transaction().GetList(models.GetListRequest{
-		Page:   page,
-		Limit:  limit,
-		Search: search,
+	toAmountStr := c.DefaultQuery("to-amount", fmt.Sprintf("%f", math.MaxFloat64))
+	toAmount, err = strconv.ParseFloat(toAmountStr, 64)
+	if err != nil {
+		handleResponse(c, "error is while converting to amount", http.StatusBadRequest, err.Error())
+		return
+	}
+
+	transactions, err := h.storage.Transaction().GetList(models.TransactionGetListRequest{
+		Page:       page,
+		Limit:      limit,
+		FromAmount: fromAmount,
+		ToAmount:   toAmount,
 	})
 
 	if err != nil {

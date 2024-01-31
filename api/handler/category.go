@@ -26,7 +26,7 @@ func (h Handler) CreateCategory(c *gin.Context) {
 		return
 	}
 
-	id, err := h.storage.Category().Create(category)
+	id, err := h.storage.Category().Create(c.Request.Context(), category)
 	if err != nil {
 		handleResponse(c, "error is while creating category", http.StatusInternalServerError, err.Error())
 		return

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"strconv"
 	"teamProject/api/models"
 	"teamProject/storage"
 )
@@ -46,28 +47,39 @@ func (p productRepo) GetByID(id string) (models.Product, error) {
 	return product, nil
 }
 
-func (p productRepo) GetList(request models.GetListRequest) (models.ProductResponse, error) {
+func (p productRepo) GetList(request models.ProductGetListRequest) (models.ProductResponse, error) {
 	var (
 		page              = request.Page
 		offset            = (page - 1) * request.Limit
 		query, countQuery string
 		count             = 0
 		products          = []models.Product{}
-		search            = request.Search
+		name              = request.Name
+		barcode           = request.Barcode
 	)
 	countQuery = `select count(1) from products where deleted_at is null `
-	if search != "" {
-		countQuery += fmt.Sprintf(` and (name ilike '%%%s%%' or CAST(barcode as text) ilike '%%%s%%')`, search, search)
+
+	if name != "" {
+		countQuery += fmt.Sprintf(` and name ilike '%%%s%%' `, name)
 	}
+
+	if barcode != 0 {
+		countQuery += ` and barcode = ` + strconv.Itoa(barcode)
+	}
+
 	if err := p.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
-		fmt.Println("error is while scanning count", err.Error())
+		fmt.Println("error is while scanning count ....", err.Error())
 		return models.ProductResponse{}, err
 	}
 
 	query = `select  id, name, price, barcode, category_id, created_at, updated_at 
 							from products where deleted_at is null `
-	if search != "" {
-		query += fmt.Sprintf(` and (name ilike '%%%s%%' or CAST(barcode as text) ilike '%%%s%%') `, search, search)
+
+	if name != "" {
+		query += fmt.Sprintf(` and name ilike '%%%s%%' `, name)
+	}
+	if barcode != 0 {
+		query += ` and barcode = ` + strconv.Itoa(barcode)
 	}
 
 	query += ` LIMIT $1 OFFSET $2`
