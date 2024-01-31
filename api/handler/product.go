@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -27,13 +28,13 @@ func (h Handler) CreateProduct(c *gin.Context) {
 		return
 	}
 
-	id, err := h.storage.Product().Create(product)
+	id, err := h.storage.Product().Create(context.Background(), product)
 	if err != nil {
 		handleResponse(c, "error is while creating product", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	createdProduct, err := h.storage.Product().GetByID(id)
+	createdProduct, err := h.storage.Product().GetByID(context.Background(), id)
 	if err != nil {
 		handleResponse(c, "error is while getting by id", http.StatusInternalServerError, err.Error())
 		return
@@ -56,7 +57,7 @@ func (h Handler) CreateProduct(c *gin.Context) {
 // @Failure      500  {object}  models.Response
 func (h Handler) GetProduct(c *gin.Context) {
 	uid := c.Param("id")
-	product, err := h.storage.Product().GetByID(uid)
+	product, err := h.storage.Product().GetByID(context.Background(), uid)
 	if err != nil {
 		handleResponse(c, "error is while getting by id", http.StatusInternalServerError, err.Error())
 		return
@@ -110,7 +111,7 @@ func (h Handler) GetProductList(c *gin.Context) {
 		return
 	}
 
-	products, err := h.storage.Product().GetList(models.ProductGetListRequest{
+	products, err := h.storage.Product().GetList(context.Background(), models.ProductGetListRequest{
 		Page:    page,
 		Limit:   limit,
 		Name:    name,
@@ -147,13 +148,13 @@ func (h Handler) UpdateProduct(c *gin.Context) {
 	}
 
 	product.ID = uid
-	id, err := h.storage.Product().Update(product)
+	id, err := h.storage.Product().Update(context.Background(), product)
 	if err != nil {
 		handleResponse(c, "error is while updating", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	updatedProduct, err := h.storage.Product().GetByID(id)
+	updatedProduct, err := h.storage.Product().GetByID(context.Background(), id)
 	if err != nil {
 		handleResponse(c, "error is while getting by id", http.StatusInternalServerError, err.Error())
 		return
@@ -176,7 +177,7 @@ func (h Handler) UpdateProduct(c *gin.Context) {
 // @Failure      500  {object}  models.Response
 func (h Handler) DeleteProduct(c *gin.Context) {
 	uid := c.Param("id")
-	if err := h.storage.Product().Delete(uid); err != nil {
+	if err := h.storage.Product().Delete(context.Background(), uid); err != nil {
 		handleResponse(c, "error is while deleting", http.StatusInternalServerError, err.Error())
 		return
 	}

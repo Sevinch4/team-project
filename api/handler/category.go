@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -32,7 +33,7 @@ func (h Handler) CreateCategory(c *gin.Context) {
 		return
 	}
 
-	createdCategory, err := h.storage.Category().GetByID(id)
+	createdCategory, err := h.storage.Category().GetByID(context.Background(), id)
 	if err != nil {
 		handleResponse(c, "error is while getting by id", http.StatusInternalServerError, err.Error())
 		return
@@ -55,7 +56,7 @@ func (h Handler) CreateCategory(c *gin.Context) {
 // @Failure      500  {object}  models.Response
 func (h Handler) GetCategory(c *gin.Context) {
 	uid := c.Param("id")
-	category, err := h.storage.Category().GetByID(uid)
+	category, err := h.storage.Category().GetByID(context.Background(), uid)
 	if err != nil {
 		handleResponse(c, "error is while getting by id", http.StatusInternalServerError, err.Error())
 		return
@@ -100,7 +101,7 @@ func (h Handler) GetCategoryList(c *gin.Context) {
 
 	search = c.Query("search")
 
-	categories, err := h.storage.Category().GetList(models.GetListRequest{
+	categories, err := h.storage.Category().GetList(context.Background(), models.GetListRequest{
 		Page:   page,
 		Limit:  limit,
 		Search: search,
@@ -137,13 +138,13 @@ func (h Handler) UpdateCategory(c *gin.Context) {
 
 	category.ID = uid
 
-	id, err := h.storage.Category().Update(category)
+	id, err := h.storage.Category().Update(context.Background(), category)
 	if err != nil {
 		handleResponse(c, "error is while updating category", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	updatedCategory, err := h.storage.Category().GetByID(id)
+	updatedCategory, err := h.storage.Category().GetByID(context.Background(), id)
 	if err != nil {
 		handleResponse(c, "error is while getting by id", http.StatusInternalServerError, err.Error())
 		return
@@ -166,7 +167,7 @@ func (h Handler) UpdateCategory(c *gin.Context) {
 // @Failure      500  {object}  models.Response
 func (h Handler) DeleteCategory(c *gin.Context) {
 	uid := c.Param("id")
-	if err := h.storage.Category().Delete(uid); err != nil {
+	if err := h.storage.Category().Delete(context.Background(), uid); err != nil {
 		handleResponse(c, "error is while deleting", http.StatusInternalServerError, err.Error())
 		return
 	}

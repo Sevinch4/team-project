@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -26,19 +27,24 @@ func (h Handler) CreateSale(c *gin.Context) {
 		return
 	}
 
-	id, err := h.storage.Sale().Create(sale)
+	id, err := h.storage.Sale().Create(context.Background(), sale)
 	if err != nil {
 		handleResponse(c, "error is while creating sale", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	createdBranch, err := h.storage.Sale().GetByID(id)
+	createdBranch, err := h.storage.Sale().GetByID(context.Background(), id)
 	if err != nil {
 		handleResponse(c, "error is while getting by id", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	handleResponse(c, "", http.StatusCreated, createdBranch)
+	handleResponse(
+		c,
+		"",
+		http.StatusCreated,
+		createdBranch,
+	)
 }
 
 // GetSale godoc
@@ -56,7 +62,7 @@ func (h Handler) CreateSale(c *gin.Context) {
 func (h Handler) GetSale(c *gin.Context) {
 	uid := c.Param("id")
 
-	sale, err := h.storage.Sale().GetByID(uid)
+	sale, err := h.storage.Sale().GetByID(context.Background(), uid)
 	if err != nil {
 		handleResponse(c, "error is while getting by id", http.StatusInternalServerError, err.Error())
 		return
@@ -102,7 +108,7 @@ func (h Handler) GetSaleList(c *gin.Context) {
 
 	search = c.Query("search")
 
-	sales, err := h.storage.Sale().GetList(models.GetListRequest{
+	sales, err := h.storage.Sale().GetList(context.Background(), models.GetListRequest{
 		Page:   page,
 		Limit:  limit,
 		Search: search,
@@ -134,13 +140,13 @@ func (h Handler) UpdateSale(c *gin.Context) {
 	}
 
 	sale.ID = uid
-	id, err := h.storage.Sale().Update(sale)
+	id, err := h.storage.Sale().Update(context.Background(), sale)
 	if err != nil {
 		handleResponse(c, "error is while updating sale", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	updatedSale, err := h.storage.Sale().GetByID(id)
+	updatedSale, err := h.storage.Sale().GetByID(context.Background(), id)
 	if err != nil {
 		handleResponse(c, "error is while getting by id", http.StatusInternalServerError, err.Error())
 		return
@@ -163,7 +169,7 @@ func (h Handler) UpdateSale(c *gin.Context) {
 // @Failure      500  {object}  models.Response
 func (h Handler) DeleteSale(c *gin.Context) {
 	uid := c.Param("id")
-	if err := h.storage.Sale().Delete(uid); err != nil {
+	if err := h.storage.Sale().Delete(context.Background(), uid); err != nil {
 		handleResponse(c, "error is while deleting", http.StatusInternalServerError, err.Error())
 		return
 	}

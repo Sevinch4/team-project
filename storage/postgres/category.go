@@ -27,10 +27,10 @@ func (c categoryRepo) Create(ctx context.Context, category models.CreateCategory
 	return id.String(), nil
 }
 
-func (c categoryRepo) GetByID(id string) (models.Category, error) {
+func (c categoryRepo) GetByID(ctx context.Context, id string) (models.Category, error) {
 	category := models.Category{}
 	query := `select id, name, parent_id, created_at, updated_at from categories where id = $1 and deleted_at is null`
-	if err := c.db.QueryRow(context.Background(), query, id).Scan(
+	if err := c.db.QueryRow(ctx, query, id).Scan(
 		&category.ID,
 		&category.Name,
 		&category.ParentID,
@@ -42,7 +42,7 @@ func (c categoryRepo) GetByID(id string) (models.Category, error) {
 	return category, nil
 }
 
-func (c categoryRepo) GetList(request models.GetListRequest) (models.CategoryResponse, error) {
+func (c categoryRepo) GetList(ctx context.Context, request models.GetListRequest) (models.CategoryResponse, error) {
 	var (
 		page              = request.Page
 		offset            = (page - 1) * request.Limit
@@ -55,7 +55,7 @@ func (c categoryRepo) GetList(request models.GetListRequest) (models.CategoryRes
 	if search != "" {
 		countQuery += fmt.Sprintf(` and name ilike '%%%s%%'`, search)
 	}
-	if err := c.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
+	if err := c.db.QueryRow(ctx, countQuery).Scan(&count); err != nil {
 		fmt.Println("error is while scanning count", err.Error())
 		return models.CategoryResponse{}, err
 	}
@@ -66,7 +66,7 @@ func (c categoryRepo) GetList(request models.GetListRequest) (models.CategoryRes
 	}
 
 	query += ` LIMIT $1 OFFSET $2`
-	rows, err := c.db.Query(context.Background(), query, request.Limit, offset)
+	rows, err := c.db.Query(ctx, query, request.Limit, offset)
 	if err != nil {
 		fmt.Println("error is while selecting all", err.Error())
 		return models.CategoryResponse{}, err
@@ -91,18 +91,18 @@ func (c categoryRepo) GetList(request models.GetListRequest) (models.CategoryRes
 	}, nil
 }
 
-func (c categoryRepo) Update(category models.UpdateCategory) (string, error) {
+func (c categoryRepo) Update(ctx context.Context, category models.UpdateCategory) (string, error) {
 	query := `update categories set name = $1, parent_id = $2, updated_at = now() where id = $3`
-	if _, err := c.db.Exec(context.Background(), query, &category.Name, &category.ParentID, &category.ID); err != nil {
+	if _, err := c.db.Exec(ctx, query, &category.Name, &category.ParentID, &category.ID); err != nil {
 		fmt.Println("error is while updating", err.Error())
 		return "", err
 	}
 	return category.ID, nil
 }
 
-func (c categoryRepo) Delete(id string) error {
+func (c categoryRepo) Delete(ctx context.Context, id string) error {
 	query := `update categories set deleted_at = now() where id = $1`
-	if _, err := c.db.Exec(context.Background(), query, id); err != nil {
+	if _, err := c.db.Exec(ctx, query, id); err != nil {
 		fmt.Println("error is while deleting", err.Error())
 		return err
 	}

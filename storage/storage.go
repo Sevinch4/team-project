@@ -16,40 +16,40 @@ type IStorage interface {
 
 type ICategory interface {
 	Create(context.Context, models.CreateCategory) (string, error)
-	GetByID(string) (models.Category, error)
-	GetList(models.GetListRequest) (models.CategoryResponse, error)
-	Update(models.UpdateCategory) (string, error)
-	Delete(string) error
+	GetByID(context.Context, string) (models.Category, error)
+	GetList(context.Context, models.GetListRequest) (models.CategoryResponse, error)
+	Update(context.Context, models.UpdateCategory) (string, error)
+	Delete(context.Context, string) error
 }
 
 type IProducts interface {
-	Create(models.CreateProduct) (string, error)
-	GetByID(string) (models.Product, error)
-	GetList(models.ProductGetListRequest) (models.ProductResponse, error)
-	Update(models.UpdateProduct) (string, error)
-	Delete(string) error
+	Create(context.Context, models.CreateProduct) (string, error)
+	GetByID(context.Context, string) (models.Product, error)
+	GetList(context.Context, models.ProductGetListRequest) (models.ProductResponse, error)
+	Update(context.Context, models.UpdateProduct) (string, error)
+	Delete(context.Context, string) error
 }
 
 type IBranchStorage interface {
-	Create(models.CreateBranch) (string, error)
-	GetByID(string) (models.Branch, error)
-	GetList(models.GetListRequest) (models.BranchResponse, error)
-	Update(models.UpdateBranch) (string, error)
-	Delete(string) error
+	Create(context.Context, models.CreateBranch) (string, error)
+	GetByID(context.Context, string) (models.Branch, error)
+	GetList(context.Context, models.GetListRequest) (models.BranchResponse, error)
+	Update(context.Context, models.UpdateBranch) (string, error)
+	Delete(context.Context, string) error
 }
 
 type ISaleStorage interface {
-	Create(models.CreateSale) (string, error)
-	GetByID(string) (models.Sale, error)
-	GetList(models.GetListRequest) (models.SaleResponse, error)
-	Update(models.UpdateSale) (string, error)
-	Delete(string) error
+	Create(context.Context, models.CreateSale) (string, error)
+	GetByID(context.Context, string) (models.Sale, error)
+	GetList(context.Context, models.GetListRequest) (models.SaleResponse, error)
+	Update(context.Context, models.UpdateSale) (string, error)
+	Delete(context.Context, string) error
 }
 
 type ITransactionStorage interface {
-	Create(models.CreateTransaction) (string, error)
-	GetByID(string) (models.Transaction, error)
-	GetList(models.TransactionGetListRequest) (models.TransactionResponse, error)
-	Update(models.UpdateTransaction) (string, error)
-	Delete(string) error
+	Create(context.Context, models.CreateTransaction) (string, error)
+	GetByID(context.Context, string) (models.Transaction, error)
+	GetList(context.Context, models.TransactionGetListRequest) (models.TransactionResponse, error)
+	Update(context.Context, models.UpdateTransaction) (string, error)
+	Delete(context.Context, string) error
 }

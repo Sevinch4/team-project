@@ -18,12 +18,12 @@ func NewTransactionRepo(db *pgxpool.Pool) storage.ITransactionStorage {
 	return transactionRepo{db: db}
 }
 
-func (t transactionRepo) Create(trans models.CreateTransaction) (string, error) {
+func (t transactionRepo) Create(ctx context.Context, trans models.CreateTransaction) (string, error) {
 	id := uuid.New()
 	query := `insert into transactions 
     					(id, sale_id, staff_id, transaction_type, source_type, amount, description) 
 						values ($1, $2, $3, $4, $5, $6, $7)`
-	if _, err := t.db.Exec(context.Background(), query, id,
+	if _, err := t.db.Exec(ctx, query, id,
 		trans.SaleID,
 		trans.StaffID,
 		trans.TransactionType,
@@ -36,12 +36,12 @@ func (t transactionRepo) Create(trans models.CreateTransaction) (string, error) 
 	return id.String(), nil
 }
 
-func (t transactionRepo) GetByID(id string) (models.Transaction, error) {
+func (t transactionRepo) GetByID(ctx context.Context, id string) (models.Transaction, error) {
 	trans := models.Transaction{}
 	query := `select id, sale_id, staff_id, transaction_type, source_type, amount,
        						description, created_at, updated_at
 							from transactions where deleted_at is null and id = $1`
-	if err := t.db.QueryRow(context.Background(), query, id).Scan(
+	if err := t.db.QueryRow(ctx, query, id).Scan(
 		&trans.ID,
 		&trans.SaleID,
 		&trans.StaffID,
@@ -57,7 +57,7 @@ func (t transactionRepo) GetByID(id string) (models.Transaction, error) {
 	return trans, nil
 }
 
-func (t transactionRepo) GetList(request models.TransactionGetListRequest) (models.TransactionResponse, error) {
+func (t transactionRepo) GetList(ctx context.Context, request models.TransactionGetListRequest) (models.TransactionResponse, error) {
 	var (
 		page              = request.Page
 		offset            = (page - 1) * request.Limit
@@ -77,7 +77,7 @@ func (t transactionRepo) GetList(request models.TransactionGetListRequest) (mode
 		countQuery += ` and amount = ` + strconv.FormatFloat(toAmount, 'f', 2, 64)
 
 	}
-	if err := t.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
+	if err := t.db.QueryRow(ctx, countQuery).Scan(&count); err != nil {
 		fmt.Println("error is while scanning row", err.Error())
 		return models.TransactionResponse{}, err
 	}
@@ -95,7 +95,7 @@ func (t transactionRepo) GetList(request models.TransactionGetListRequest) (mode
 	}
 
 	query += ` LIMIT $1 OFFSET $2`
-	rows, err := t.db.Query(context.Background(), query, request.Limit, offset)
+	rows, err := t.db.Query(ctx, query, request.Limit, offset)
 	if err != nil {
 		fmt.Println("error is while selecting all from transactions", err.Error())
 		return models.TransactionResponse{}, err
@@ -124,11 +124,11 @@ func (t transactionRepo) GetList(request models.TransactionGetListRequest) (mode
 	}, nil
 }
 
-func (t transactionRepo) Update(transaction models.UpdateTransaction) (string, error) {
+func (t transactionRepo) Update(ctx context.Context, transaction models.UpdateTransaction) (string, error) {
 	query := `update transactions set sale_id = $1, staff_id = $2, transaction_type = $3, source_type = $4, amount = $5,
 								description = $6, updated_at = now() 
                     			where id = $7`
-	if _, err := t.db.Exec(context.Background(), query,
+	if _, err := t.db.Exec(ctx, query,
 		&transaction.SaleID,
 		&transaction.StaffID,
 		&transaction.TransactionType,
@@ -142,9 +142,9 @@ func (t transactionRepo) Update(transaction models.UpdateTransaction) (string, e
 	return transaction.ID, nil
 }
 
-func (t transactionRepo) Delete(id string) error {
+func (t transactionRepo) Delete(ctx context.Context, id string) error {
 	query := `update transactions set deleted_at = now() where id = $1`
-	if _, err := t.db.Exec(context.Background(), query, id); err != nil {
+	if _, err := t.db.Exec(ctx, query, id); err != nil {
 		fmt.Println("error is while deleting", err.Error())
 		return err
 	}

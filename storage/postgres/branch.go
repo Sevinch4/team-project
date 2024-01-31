@@ -16,13 +16,13 @@ type branchRepo struct {
 func NewBranchRepo(db *pgxpool.Pool) storage.IBranchStorage {
 	return branchRepo{db: db}
 }
-func (b branchRepo) Create(branch models.CreateBranch) (string, error) {
+func (b branchRepo) Create(ctx context.Context, branch models.CreateBranch) (string, error) {
 	id := uuid.New()
 
 	query := `insert into branches (id, name, address) 
 									values($1, $2, $3)`
 
-	if _, err := b.db.Exec(context.Background(), query,
+	if _, err := b.db.Exec(ctx, query,
 		id,
 		branch.Name,
 		branch.Address); err != nil {
@@ -33,10 +33,10 @@ func (b branchRepo) Create(branch models.CreateBranch) (string, error) {
 	return id.String(), nil
 }
 
-func (b branchRepo) GetByID(id string) (models.Branch, error) {
+func (b branchRepo) GetByID(ctx context.Context, id string) (models.Branch, error) {
 	branch := models.Branch{}
 	query := `select id, name, address, created_at, updated_at from branches where id = $1 and deleted_at is null`
-	if err := b.db.QueryRow(context.Background(), query, id).Scan(
+	if err := b.db.QueryRow(ctx, query, id).Scan(
 		&branch.ID,
 		&branch.Name,
 		&branch.Address,
@@ -48,7 +48,7 @@ func (b branchRepo) GetByID(id string) (models.Branch, error) {
 	return branch, nil
 }
 
-func (b branchRepo) GetList(request models.GetListRequest) (models.BranchResponse, error) {
+func (b branchRepo) GetList(ctx context.Context, request models.GetListRequest) (models.BranchResponse, error) {
 	var (
 		count             = 0
 		branches          = []models.Branch{}
@@ -64,7 +64,7 @@ func (b branchRepo) GetList(request models.GetListRequest) (models.BranchRespons
 		countQuery += fmt.Sprintf(` and name ilike '%%%s%%'`, search)
 	}
 
-	if err := b.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
+	if err := b.db.QueryRow(ctx, countQuery).Scan(&count); err != nil {
 		fmt.Println("error is while scanning count", err.Error())
 		return models.BranchResponse{}, err
 	}
@@ -75,7 +75,7 @@ func (b branchRepo) GetList(request models.GetListRequest) (models.BranchRespons
 	}
 
 	query += ` LIMIT $1 OFFSET $2`
-	rows, err := b.db.Query(context.Background(), query, request.Limit, offset)
+	rows, err := b.db.Query(ctx, query, request.Limit, offset)
 	if err != nil {
 		fmt.Println("error is while selecting * from branches", err.Error())
 		return models.BranchResponse{}, err
@@ -100,10 +100,10 @@ func (b branchRepo) GetList(request models.GetListRequest) (models.BranchRespons
 		Count:    count,
 	}, err
 }
-func (b branchRepo) Update(branch models.UpdateBranch) (string, error) {
+func (b branchRepo) Update(ctx context.Context, branch models.UpdateBranch) (string, error) {
 	query := `update branches set name = $1, address = $2, updated_at = Now() where id = $3`
 
-	if _, err := b.db.Exec(context.Background(), query,
+	if _, err := b.db.Exec(ctx, query,
 		&branch.Name,
 		&branch.Address,
 		&branch.ID); err != nil {
@@ -113,10 +113,10 @@ func (b branchRepo) Update(branch models.UpdateBranch) (string, error) {
 
 	return branch.ID, nil
 }
-func (b branchRepo) Delete(id string) error {
+func (b branchRepo) Delete(ctx context.Context, id string) error {
 	query := `update branches set deleted_at = now() where id = $1`
 
-	if _, err := b.db.Exec(context.Background(), query, id); err != nil {
+	if _, err := b.db.Exec(ctx, query, id); err != nil {
 		fmt.Println("error is while deleting branches", err.Error())
 		return err
 	}

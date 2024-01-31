@@ -18,10 +18,10 @@ func NewProductRepo(db *pgxpool.Pool) storage.IProducts {
 	return productRepo{db: db}
 }
 
-func (p productRepo) Create(product models.CreateProduct) (string, error) {
+func (p productRepo) Create(ctx context.Context, product models.CreateProduct) (string, error) {
 	id := uuid.New()
 	query := `insert into products (id, name, price, barcode, category_id) values($1, $2, $3, $4, $5)`
-	if _, err := p.db.Exec(context.Background(), query,
+	if _, err := p.db.Exec(ctx, query,
 		id, product.Name, product.Price, product.Barcode, product.CategoryID); err != nil {
 		fmt.Println("error is while inserting data", err.Error())
 		return "", err
@@ -29,11 +29,11 @@ func (p productRepo) Create(product models.CreateProduct) (string, error) {
 	return id.String(), nil
 }
 
-func (p productRepo) GetByID(id string) (models.Product, error) {
+func (p productRepo) GetByID(ctx context.Context, id string) (models.Product, error) {
 	product := models.Product{}
 	query := `select id, name, price, barcode, category_id, created_at, updated_at 
 							from products where id = $1 and deleted_at is null`
-	if err := p.db.QueryRow(context.Background(), query, id).Scan(
+	if err := p.db.QueryRow(ctx, query, id).Scan(
 		&product.ID,
 		&product.Name,
 		&product.Price,
@@ -47,7 +47,7 @@ func (p productRepo) GetByID(id string) (models.Product, error) {
 	return product, nil
 }
 
-func (p productRepo) GetList(request models.ProductGetListRequest) (models.ProductResponse, error) {
+func (p productRepo) GetList(ctx context.Context, request models.ProductGetListRequest) (models.ProductResponse, error) {
 	var (
 		page              = request.Page
 		offset            = (page - 1) * request.Limit
@@ -67,7 +67,7 @@ func (p productRepo) GetList(request models.ProductGetListRequest) (models.Produ
 		countQuery += ` and barcode = ` + strconv.Itoa(barcode)
 	}
 
-	if err := p.db.QueryRow(context.Background(), countQuery).Scan(&count); err != nil {
+	if err := p.db.QueryRow(ctx, countQuery).Scan(&count); err != nil {
 		fmt.Println("error is while scanning count ....", err.Error())
 		return models.ProductResponse{}, err
 	}
@@ -83,7 +83,7 @@ func (p productRepo) GetList(request models.ProductGetListRequest) (models.Produ
 	}
 
 	query += ` LIMIT $1 OFFSET $2`
-	rows, err := p.db.Query(context.Background(), query, request.Limit, offset)
+	rows, err := p.db.Query(ctx, query, request.Limit, offset)
 	if err != nil {
 		fmt.Println("error is while selecting all", err.Error())
 		return models.ProductResponse{}, err
@@ -111,10 +111,10 @@ func (p productRepo) GetList(request models.ProductGetListRequest) (models.Produ
 
 }
 
-func (p productRepo) Update(product models.UpdateProduct) (string, error) {
+func (p productRepo) Update(ctx context.Context, product models.UpdateProduct) (string, error) {
 	query := `update products set name = $1, price = $2, category_id = $3, updated_at = now() 
 									where id = $4`
-	if _, err := p.db.Exec(context.Background(), query,
+	if _, err := p.db.Exec(ctx, query,
 		&product.Name,
 		&product.Price,
 		&product.CategoryID,
@@ -125,9 +125,9 @@ func (p productRepo) Update(product models.UpdateProduct) (string, error) {
 	return product.ID, nil
 }
 
-func (p productRepo) Delete(id string) error {
+func (p productRepo) Delete(ctx context.Context, id string) error {
 	query := `update products set deleted_at = now() where id = $1`
-	if _, err := p.db.Exec(context.Background(), query, &id); err != nil {
+	if _, err := p.db.Exec(ctx, query, &id); err != nil {
 		fmt.Println("error is while deleting", err.Error())
 		return err
 	}

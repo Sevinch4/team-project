@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -27,13 +28,13 @@ func (h Handler) CreateBranch(c *gin.Context) {
 		return
 	}
 
-	id, err := h.storage.Branch().Create(branch)
+	id, err := h.storage.Branch().Create(context.Background(), branch)
 	if err != nil {
 		handleResponse(c, "error is while creating branch", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	createdBranch, err := h.storage.Branch().GetByID(id)
+	createdBranch, err := h.storage.Branch().GetByID(context.Background(), id)
 	if err != nil {
 		handleResponse(c, "error is while getting by id", http.StatusInternalServerError, err.Error())
 		return
@@ -57,7 +58,7 @@ func (h Handler) CreateBranch(c *gin.Context) {
 func (h Handler) GetBranch(c *gin.Context) {
 	uid := c.Param("id")
 
-	branch, err := h.storage.Branch().GetByID(uid)
+	branch, err := h.storage.Branch().GetByID(context.Background(), uid)
 	if err != nil {
 		handleResponse(c, "error is while getting by id", http.StatusInternalServerError, err.Error())
 		return
@@ -103,7 +104,7 @@ func (h Handler) GetBranchList(c *gin.Context) {
 
 	search = c.Query("search")
 
-	branches, err := h.storage.Branch().GetList(models.GetListRequest{
+	branches, err := h.storage.Branch().GetList(context.Background(), models.GetListRequest{
 		Page:   page,
 		Limit:  limit,
 		Search: search,
@@ -135,13 +136,13 @@ func (h Handler) UpdateBranch(c *gin.Context) {
 	}
 
 	branch.ID = uid
-	id, err := h.storage.Branch().Update(branch)
+	id, err := h.storage.Branch().Update(context.Background(), branch)
 	if err != nil {
 		handleResponse(c, "error is while updating branch", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	updatedBranch, err := h.storage.Branch().GetByID(id)
+	updatedBranch, err := h.storage.Branch().GetByID(context.Background(), id)
 	if err != nil {
 		handleResponse(c, "error is while getting by id", http.StatusInternalServerError, err.Error())
 		return
@@ -165,7 +166,7 @@ func (h Handler) UpdateBranch(c *gin.Context) {
 func (h Handler) DeleteBranch(c *gin.Context) {
 	uid := c.Param("id")
 
-	if err := h.storage.Branch().Delete(uid); err != nil {
+	if err := h.storage.Branch().Delete(context.Background(), uid); err != nil {
 		handleResponse(c, "error is while delteing branch", http.StatusInternalServerError, err.Error())
 		return
 	}

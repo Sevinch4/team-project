@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"math"
@@ -28,13 +29,13 @@ func (h Handler) CreateTransaction(c *gin.Context) {
 		return
 	}
 
-	id, err := h.storage.Transaction().Create(trans)
+	id, err := h.storage.Transaction().Create(context.Background(), trans)
 	if err != nil {
 		handleResponse(c, "error is while creating", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	createdTrans, err := h.storage.Transaction().GetByID(id)
+	createdTrans, err := h.storage.Transaction().GetByID(context.Background(), id)
 	if err != nil {
 		handleResponse(c, "error is while getting by id", http.StatusInternalServerError, err.Error())
 		return
@@ -58,7 +59,7 @@ func (h Handler) CreateTransaction(c *gin.Context) {
 func (h Handler) GetTransaction(c *gin.Context) {
 	uid := c.Param("id")
 
-	trans, err := h.storage.Transaction().GetByID(uid)
+	trans, err := h.storage.Transaction().GetByID(context.Background(), uid)
 	if err != nil {
 		handleResponse(c, "error is while getting by id", http.StatusInternalServerError, err.Error())
 		return
@@ -118,7 +119,7 @@ func (h Handler) GetTransactionList(c *gin.Context) {
 		return
 	}
 
-	transactions, err := h.storage.Transaction().GetList(models.TransactionGetListRequest{
+	transactions, err := h.storage.Transaction().GetList(context.Background(), models.TransactionGetListRequest{
 		Page:       page,
 		Limit:      limit,
 		FromAmount: fromAmount,
@@ -157,13 +158,13 @@ func (h Handler) UpdateTransaction(c *gin.Context) {
 
 	trans.ID = uid
 
-	id, err := h.storage.Transaction().Update(trans)
+	id, err := h.storage.Transaction().Update(context.Background(), trans)
 	if err != nil {
 		handleResponse(c, "error is while updating trans", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	updatedTrans, err := h.storage.Transaction().GetByID(id)
+	updatedTrans, err := h.storage.Transaction().GetByID(context.Background(), id)
 	if err != nil {
 		handleResponse(c, "error is while getting by id", http.StatusInternalServerError, err.Error())
 		return
@@ -187,7 +188,7 @@ func (h Handler) UpdateTransaction(c *gin.Context) {
 func (h Handler) DeleteTransaction(c *gin.Context) {
 	uid := c.Param("id")
 
-	if err := h.storage.Transaction().Delete(uid); err != nil {
+	if err := h.storage.Transaction().Delete(context.Background(), uid); err != nil {
 		handleResponse(c, "error is while deleting", http.StatusInternalServerError, err.Error())
 		return
 	}
