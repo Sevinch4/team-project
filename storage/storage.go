@@ -44,11 +44,6 @@ type IRepositoryRepo interface {
 }
 
 type IBasketRepo interface {
-	Category() ICategory
-	Product() IProducts
-	Branch() IBranchStorage
-	Sale() ISaleStorage
-	Transaction() ITransactionStorage
 }
 
 type ICategory interface {
