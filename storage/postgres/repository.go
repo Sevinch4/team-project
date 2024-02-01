@@ -23,23 +23,23 @@ func NewRepositoryRepo(DB *pgxpool.Pool) storage.IRepositoryRepo {
 }
 
 func (s *repositoryRepo) Create(repository models.CreateRepository) (string, error) {
-    id := uuid.New().String()
-    createdAt := time.Now()
+	id := uuid.New()
+	createdAt := time.Now()
 
-    if _, err := s.DB.Exec(context.Background(), `INSERT INTO repositories 
+	if _, err := s.DB.Exec(context.Background(), `INSERT INTO repositories 
     (id, product_id, branch_id, count, created_at) 
         VALUES ($1, $2, $3, $4, $5)`,
-        id,
-        repository.ProductID,
-        repository.BranchID,
-        repository.Count,
-        createdAt,
-    ); err != nil {
-        log.Println("Error while inserting data:", err)
-        return "", err
-    }
+		id,
+		repository.ProductID,
+		repository.BranchID,
+		repository.Count,
+		createdAt,
+	); err != nil {
+		log.Println("Error while inserting data:", err)
+		return "", err
+	}
 
-    return id, nil
+	return id.String(), nil
 }
 
 func (s *repositoryRepo) GetByID(id models.PrimaryKey) (models.Repository, error) {
@@ -64,7 +64,7 @@ func (s *repositoryRepo) GetByID(id models.PrimaryKey) (models.Repository, error
 func (s *repositoryRepo) GetList(request models.GetListRequest) (models.RepositoriesResponse, error) {
 	var (
 		repositories = []models.Repository{}
-		count       int
+		count        int
 	)
 
 	countQuery := `SELECT COUNT(*) FROM repositories`
@@ -111,7 +111,7 @@ func (s *repositoryRepo) GetList(request models.GetListRequest) (models.Reposito
 
 	return models.RepositoriesResponse{
 		Repositories: repositories,
-		Count:       count,
+		Count:        count,
 	}, nil
 }
 

@@ -3,11 +3,10 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"teamProject/config"
-	"teamProject/storage"
-
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"
+	"teamProject/config"
+	"teamProject/storage"
 )
 
 type Store struct {
@@ -35,9 +34,8 @@ func New(ctx context.Context, cfg config.Config) (storage.IStorage, error) {
 	}
 	return &Store{
 		Pool: pool,
-		}, nil
+	}, nil
 }
-
 
 func (s *Store) Close() {
 	s.Pool.Close()
@@ -45,6 +43,27 @@ func (s *Store) Close() {
 
 func (s *Store) StaffTarif() storage.IStaffTarifRepo {
 	return NewStaffTarifRepo(s.Pool)
+}
+
+func (s *Store) Category() storage.ICategory {
+	return NewCategoryRepo(s.Pool)
+}
+
+func (s *Store) Product() storage.IProducts {
+	return NewProductRepo(s.Pool)
+}
+
+func (s *Store) Branch() storage.IBranchStorage {
+	return NewBranchRepo(s.Pool)
+}
+
+func (s *Store) Sale() storage.ISaleStorage {
+	return NewSaleRepo(s.Pool)
+}
+
+func (s *Store) Transaction() storage.ITransactionStorage {
+	return NewTransactionRepo(s.Pool)
+
 }
 
 func (s *Store) Staff() storage.IStaffRepo {
@@ -56,7 +75,7 @@ func (s *Store) Repository() storage.IRepositoryRepo {
 }
 
 func (s *Store) Basket() storage.IBasketRepo {
-	return 	NewBasketRepo(s.Pool)
+	return NewBasketRepo(s.Pool)
 }
 
 func (s *Store) RTransaction() storage.IRepositoryTransactionRepo {

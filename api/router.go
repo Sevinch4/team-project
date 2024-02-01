@@ -18,13 +18,43 @@ func New(storage storage.IStorage) *gin.Engine {
 
 	r := gin.New()
 
+	r.POST("/category", h.CreateCategory)
+	r.GET("/category/:id", h.GetCategory)
+	r.GET("/categories", h.GetCategoryList)
+	r.PUT("/category/:id", h.UpdateCategory)
+	r.DELETE("/category/:id", h.DeleteCategory)
+
+	r.POST("/product", h.CreateProduct)
+	r.GET("/product/:id", h.GetProduct)
+	r.GET("/products", h.GetProductList)
+	r.PUT("/product/:id", h.UpdateProduct)
+	r.DELETE("/product/:id", h.DeleteProduct)
+
+	r.POST("/branch", h.CreateBranch)
+	r.GET("/branch/:id", h.GetBranch)
+	r.GET("/branches", h.GetBranchList)
+	r.PUT("/branch/:id", h.UpdateBranch)
+	r.DELETE("/branch/:id", h.DeleteBranch)
+
+	r.POST("/repository", h.CreateRepository)
+	r.GET("/repository/:id", h.GetRepository)
+	r.GET("/repositories", h.GetRepositoryList)
+	r.PUT("/repository/:id", h.UpdateRepository)
+	r.DELETE("/repository/:id", h.DeleteRepository)
+
+	r.POST("/sale", h.CreateSale)
+	r.GET("/sale/:id", h.GetSale)
+	r.GET("/sales", h.GetSaleList)
+	r.PUT("/sale/:id", h.UpdateSale)
+	r.DELETE("/sale/:id", h.DeleteSale)
+
+	//basket bolsh kere
+
 	r.POST("/stafftarif", h.CreateStaffTarif)
 	r.GET("/stafftarif/:id", h.GetStaffTarif)
 	r.GET("/stafftarifs", h.GetStaffTarifList)
 	r.PUT("/stafftarif/:id", h.UpdateStaffTarif)
 	r.DELETE("/stafftarif/:id", h.DeleteStaffTarif)
-
-	// Staff
 
 	r.POST("/staff", h.CreateStaff)
 	r.GET("/staff/:id", h.GetStaff)
@@ -32,13 +62,13 @@ func New(storage storage.IStorage) *gin.Engine {
 	r.PUT("/staff/:id", h.UpdateStaff)
 	r.DELETE("/staff/:id", h.DeleteStaff)
 
-	// Repository 
-	
-	r.POST("/repository", h.CreateRepository)
-	r.GET("/repository/:id", h.GetRepository)
-	r.GET("/repositories", h.GetRepositoryList)
-	r.PUT("/repository/:id", h.UpdateRepository)
-	r.DELETE("/repository/:id", h.DeleteRepository)
+	r.POST("/transaction", h.CreateTransaction)
+	r.GET("/transaction/:id", h.GetTransaction)
+	r.GET("/transactions", h.GetTransactionList)
+	r.PUT("/transaction/:id", h.UpdateTransaction)
+	r.DELETE("/transaction/:id", h.DeleteTransaction)
+
+	//repository-transaction bolsh kere
 
 	// Basket
 
