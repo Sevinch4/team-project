@@ -55,3 +55,7 @@ func (s *Store) Repository() storage.IRepositoryRepo {
 	return NewRepositoryRepo(s.Pool)
 }
 
+func (s *Store) Basket() storage.IBasketRepo {
+	return 	NewBasketRepo(s.Pool)
+}
+

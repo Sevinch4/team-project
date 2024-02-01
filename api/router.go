@@ -40,6 +40,14 @@ func New(storage storage.IStorage) *gin.Engine {
 	r.PUT("/repository/:id", h.UpdateRepository)
 	r.DELETE("/repository/:id", h.DeleteRepository)
 
+	// Basket
+
+	r.POST("/basket", h.CreateBasket)
+	r.GET("/basket/:id", h.GetBasket)
+	r.GET("/baskets", h.GetBasket)
+	r.PUT("/basket/:id", h.UpdateBasket)
+	r.DELETE("/basket/:id", h.DeleteBasket)
+
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run(":8080")
 	return r

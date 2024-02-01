@@ -7,6 +7,7 @@ type IStorage interface {
 	StaffTarif() IStaffTarifRepo
 	Staff() IStaffRepo
 	Repository() IRepositoryRepo
+	Basket() IBasketRepo
 }
 
 type IStaffTarifRepo interface {
@@ -36,5 +37,9 @@ type IRepositoryRepo interface {
 }
 
 type IBasketRepo interface {
-	
+	Create(models.CreateBasket) (string, error)
+	GetByID(models.PrimaryKey) (models.Basket, error)
+	GetList(models.GetListRequest) (models.BasketsResponse, error)
+	Update(models.UpdateBasket) (string, error)
+	Delete(string) error
 }

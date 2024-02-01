@@ -1,4 +1,43 @@
 definitions:
+  models.Basket:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      price:
+        type: integer
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      sale_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.BasketsResponse:
+    properties:
+      basket:
+        items:
+          $ref: '#/definitions/models.Basket'
+        type: array
+      count:
+        type: integer
+    type: object
+  models.CreateBasket:
+    properties:
+      price:
+        type: integer
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      sale_id:
+        type: string
+    type: object
   models.CreateRepository:
     properties:
       branch_id:
@@ -138,6 +177,19 @@ definitions:
           $ref: '#/definitions/models.Staff'
         type: array
     type: object
+  models.UpdateBasket:
+    properties:
+      id:
+        type: string
+      price:
+        type: integer
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      sale_id:
+        type: string
+    type: object
   models.UpdateRepository:
     properties:
       branch_id:
@@ -194,6 +246,181 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /basket:
+    post:
+      consumes:
+      - application/json
+      description: create a new basket
+      parameters:
+      - description: basket
+        in: body
+        name: basket
+        schema:
+          $ref: '#/definitions/models.CreateBasket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Basket'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Create a new basket
+      tags:
+      - basket
+  /basket/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete basket
+      parameters:
+      - description: basket_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Delete basket
+      tags:
+      - basket
+    get:
+      consumes:
+      - application/json
+      description: get basket by id
+      parameters:
+      - description: basket_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Basket'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get basket by id
+      tags:
+      - basket
+    put:
+      consumes:
+      - application/json
+      description: get basket
+      parameters:
+      - description: basket_id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: basket
+        in: body
+        name: basket
+        schema:
+          $ref: '#/definitions/models.UpdateBasket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Basket'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Update basket
+      tags:
+      - basket
+  /baskets:
+    get:
+      consumes:
+      - application/json
+      description: get basket list
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      - description: search
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BasketsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get basket list
+      tags:
+      - basket
   /repositories:
     get:
       consumes:

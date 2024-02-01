@@ -1,4 +1,3 @@
-// postgres/staff_repo.go
 package postgres
 
 import (
