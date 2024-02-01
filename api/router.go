@@ -48,7 +48,11 @@ func New(storage storage.IStorage) *gin.Engine {
 	r.PUT("/sale/:id", h.UpdateSale)
 	r.DELETE("/sale/:id", h.DeleteSale)
 
-	//basket bolsh kere
+	r.POST("/basket", h.CreateBasket)
+	r.GET("/basket/:id", h.GetBasket)
+	r.GET("/baskets", h.GetBasket)
+	r.PUT("/basket/:id", h.UpdateBasket)
+	r.DELETE("/basket/:id", h.DeleteBasket)
 
 	r.POST("/stafftarif", h.CreateStaffTarif)
 	r.GET("/stafftarif/:id", h.GetStaffTarif)
@@ -67,18 +71,6 @@ func New(storage storage.IStorage) *gin.Engine {
 	r.GET("/transactions", h.GetTransactionList)
 	r.PUT("/transaction/:id", h.UpdateTransaction)
 	r.DELETE("/transaction/:id", h.DeleteTransaction)
-
-	//repository-transaction bolsh kere
-
-	// Basket
-
-	r.POST("/basket", h.CreateBasket)
-	r.GET("/basket/:id", h.GetBasket)
-	r.GET("/baskets", h.GetBasket)
-	r.PUT("/basket/:id", h.UpdateBasket)
-	r.DELETE("/basket/:id", h.DeleteBasket)
-
-	// Repository Transaction
 
 	r.POST("/rtransaction", h.CreateRepositoryTransaction)
 	r.GET("/rtransaction/:id", h.GetRepositoryTransaction)
