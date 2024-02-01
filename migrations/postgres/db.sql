@@ -6,9 +6,13 @@ CREATE TYPE staff_type_enum AS ENUM ('shop_assistant', 'cashier');
 
 CREATE TYPE payment_type_enum AS ENUM ('card', 'cash');
 
+CREATE TYPE source_type_enum AS ENUM ('bonus', 'sales');
+
+CREATE TYPE status_enum AS ENUM ('in_process', 'success', 'cancel');
+
 CREATE TYPE storage_trunsaction_type_enum AS ENUM ('minus', 'plus');
 
-CREATE TYPE transaction_type_enum AS ENUM ('withdraw', 'topup');
+CREATE TYPE repository_trunsaction_type_enum AS ENUM ('withdraw', 'topup');
 
 CREATE TABLE branches(
     id         UUID PRIMARY KEY,
@@ -44,19 +48,6 @@ CREATE TABLE repositories (
     product_id UUID REFERENCES products(id),
     branch_id UUID REFERENCES branches(id),
     count INT,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
-    deleted_at TIMESTAMP DEFAULT NULL
-);
-
-CREATE TABLE transactions (
-    id uuid PRIMARY KEY NOT NULL,
-    sale_id uuid REFERENCES sales (id),
-    staff_id uuid REFERENCES staffs (id),
-    transaction_type transaction_type_enum,
-    source_type_enum,
-    amount numeric,
-    description text,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     deleted_at TIMESTAMP DEFAULT NULL
@@ -103,6 +94,19 @@ CREATE TABLE sales (
     deleted_at TIMESTAMP DEFAULT NULL
 );
 
+CREATE TABLE transactions (
+    id uuid PRIMARY KEY NOT NULL,
+    sale_id uuid REFERENCES sales (id),
+    staff_id uuid REFERENCES staffs (id),
+    transaction_type transaction_type_enum,
+    source_type source_type_enum,
+    amount numeric,
+    description text,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    deleted_at TIMESTAMP DEFAULT NULL
+);
+
 CREATE TABLE baskets (
     id UUID PRIMARY KEY NOT NULL,
     sale_id UUID REFERENCES sales(id),
@@ -118,7 +122,7 @@ CREATE TABLE repository_transactions (
     id UUID PRIMARY KEY NOT NULL,
     staff_id UUID REFERENCES staffs(id),
     product_id UUID REFERENCES products(id),
-    storage_transaction_type storage_transaction_type_enum,
+    repository_transaction_type repository_trunsaction_type_enum,
     price int, 
     quantity int DEFAULT 0,
     created_at TIMESTAMP DEFAULT NOW(),

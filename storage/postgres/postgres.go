@@ -59,3 +59,6 @@ func (s *Store) Basket() storage.IBasketRepo {
 	return 	NewBasketRepo(s.Pool)
 }
 
+func (s *Store) RTransaction() storage.IRepositoryTransactionRepo {
+	return NewRepositoryTransactionRepo(s.Pool)
+}

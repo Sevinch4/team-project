@@ -173,9 +173,9 @@ func (h *Handler) DeleteRepository(c *gin.Context) {
 	uid := c.Param("id")
 
 	if err := h.storage.Repository().Delete(uid); err != nil {
-		handleResponse(c, "error while deleting staff ", http.StatusInternalServerError, err.Error())
+		handleResponse(c, "error while deleting repository ", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	handleResponse(c, "", http.StatusOK, "staff tariff deleted")
+	handleResponse(c, "", http.StatusOK, "repository deleted")
 }
