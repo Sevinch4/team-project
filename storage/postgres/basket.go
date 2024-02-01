@@ -118,19 +118,32 @@ func (s *basketRepo) GetList(request models.GetListRequest) (models.BasketsRespo
 	}, nil
 }
 
-func (s *basketRepo) Update(repository models.UpdateRepository) (string, error) {
-	query := `UPDATE repositories SET branch_id = $1, product_id = $2, count = $3 WHERE id = $4`
+func (s *basketRepo) Update(basket models.UpdateBasket) (string, error) {
+	query := `UPDATE baskets SET sale_id = $1, product_id = $2, quantity = $3, price = $4, updated_at = NOW() WHERE id = $5`
 
 	_, err := s.DB.Exec(context.Background(), query,
-		&repository.BranchID,
-		&repository.ProductID,
-		&repository.Count,
-		&repository.ID,
+		&basket.SaleID,
+		&basket.ProductID,
+		&basket.Quantity,
+		&basket.Price,
+		&basket.ID,
 	)
 	if err != nil {
 		log.Println("Error while updating Repository :", err)
 		return "", err
 	}
 
-	return repository.ID, nil
+	return basket.ID, nil
+}
+
+func (s *basketRepo) Delete(id string) error {
+	query := `UPDATE baskets SET deleted_at = NOW() WHERE id = $1`
+
+	_, err := s.DB.Exec(context.Background(), query, id)
+	if err != nil {
+		log.Println("Error while deleting Repository :", err)
+		return err
+	}
+
+	return nil
 }
