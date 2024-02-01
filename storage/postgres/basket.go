@@ -27,7 +27,7 @@ func (s *basketRepo) Create(basket models.CreateBasket) (string, error) {
 	createdAT := time.Now()
 
 	if _, err := s.DB.Exec(context.Background(), `INSERT INTO baskets 
-		(id, staff_id, product_id, storage_trunsaction_type, price, quantity, created_at)
+		(id, sale_id, product_id, storage_trunsaction_type, price, quantity, created_at)
 			VALUES($1, $2, $3, $4, $5, $6, $7)`,
 		id,
 		basket.SaleID,
@@ -36,11 +36,11 @@ func (s *basketRepo) Create(basket models.CreateBasket) (string, error) {
 		basket.Price,
 		createdAT,
 	); err != nil {
-        log.Println("Error while inserting data:", err)
-        return "", err
-    }
+		log.Println("Error while inserting data:", err)
+		return "", err
+	}
 
-    return id, nil
+	return id, nil
 }
 
 func (s *basketRepo) GetByID(id models.PrimaryKey) (models.Basket, error) {
@@ -66,7 +66,7 @@ func (s *basketRepo) GetByID(id models.PrimaryKey) (models.Basket, error) {
 func (s *basketRepo) GetList(request models.GetListRequest) (models.BasketsResponse, error) {
 	var (
 		baskets = []models.Basket{}
-		count       int
+		count   int
 	)
 
 	countQuery := `SELECT COUNT(*) FROM baskets`
@@ -114,7 +114,7 @@ func (s *basketRepo) GetList(request models.GetListRequest) (models.BasketsRespo
 
 	return models.BasketsResponse{
 		Baskets: baskets,
-		Count:       count,
+		Count:   count,
 	}, nil
 }
 
