@@ -4,19 +4,50 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a86fafd7-edad-4970-94e8-a48106078602" name="Changes" comment="" />
+    <list default="true" id="a86fafd7-edad-4970-94e8-a48106078602" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/handler/branch.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/handler/category.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/handler/product.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/handler/sale.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/handler/transaction.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/models/branch.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/models/category.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/models/product.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/models/sale.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/models/transaction.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backup/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backup/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backup/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backup/team-project.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backup/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage/postgres/branch.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage/postgres/category.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage/postgres/product.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage/postgres/sale.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/storage/postgres/transaction.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/docs/docs.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/docs/docs.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/docs/swagger.json" beforeDir="false" afterPath="$PROJECT_DIR$/api/docs/swagger.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/docs/swagger.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/api/docs/swagger.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/router.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/postgres/db.sql" beforeDir="false" afterPath="$PROJECT_DIR$/migrations/postgres/db.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage/postgres/postgres.go" beforeDir="false" afterPath="$PROJECT_DIR$/storage/postgres/postgres.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage/postgres/repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/storage/postgres/repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storage/storage.go" beforeDir="false" afterPath="$PROJECT_DIR$/storage/storage.go" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="GOROOT" url="file://$PROJECT_DIR$/../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.21.5.linux-amd64" />
+  <component name="GOROOT" url="file://$USER_HOME$/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.21.5.linux-amd64" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 1
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="2bjALiSBrTUozZLh5jV9f5pDCbo" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -29,7 +60,7 @@
     "RunOnceActivity.go.formatter.settings.were.checked": "true",
     "RunOnceActivity.go.migrated.go.modules.settings": "true",
     "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "Merging Baxtiyor",
     "go.import.settings.migrated": "true",
     "go.sdk.automatically.set": "true",
     "last_opened_file_path": "/home/sevinch/team-project",

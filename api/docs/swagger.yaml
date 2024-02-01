@@ -1,4 +1,32 @@
 definitions:
+  models.Basket:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      price:
+        type: integer
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      sale_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.BasketsResponse:
+    properties:
+      basket:
+        items:
+          $ref: '#/definitions/models.Basket'
+        type: array
+      count:
+        type: integer
+    type: object
   models.Branch:
     properties:
       address:
@@ -43,6 +71,17 @@ definitions:
       count:
         type: integer
     type: object
+  models.CreateBasket:
+    properties:
+      price:
+        type: integer
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      sale_id:
+        type: string
+    type: object
   models.CreateBranch:
     properties:
       address:
@@ -75,6 +114,19 @@ definitions:
       count:
         type: integer
       paroduct_id:
+        type: string
+    type: object
+  models.CreateRepositoryTransaction:
+    properties:
+      price:
+        type: integer
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      repository_transaction_type:
+        type: string
+      staff_id:
         type: string
     type: object
   models.CreateSale:
@@ -190,6 +242,36 @@ definitions:
         type: string
       updated_at:
         type: string
+    type: object
+  models.RepositoryTransaction:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      price:
+        type: integer
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      repository_transaction_type:
+        type: string
+      staff_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.RepositoryTransactionsResponse:
+    properties:
+      count:
+        type: integer
+      repository_transactions:
+        items:
+          $ref: '#/definitions/models.RepositoryTransaction'
+        type: array
     type: object
   models.Response:
     properties:
@@ -318,6 +400,19 @@ definitions:
           $ref: '#/definitions/models.Transaction'
         type: array
     type: object
+  models.UpdateBasket:
+    properties:
+      id:
+        type: string
+      price:
+        type: integer
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      sale_id:
+        type: string
+    type: object
   models.UpdateBranch:
     properties:
       address:
@@ -350,6 +445,21 @@ definitions:
       id:
         type: string
       paroduct_id:
+        type: string
+    type: object
+  models.UpdateRepositoryTransaction:
+    properties:
+      id:
+        type: string
+      price:
+        type: integer
+      product_id:
+        type: string
+      quantity:
+        type: integer
+      repository_transaction_type:
+        type: string
+      staff_id:
         type: string
     type: object
   models.UpdateSale:
@@ -429,6 +539,181 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /basket:
+    post:
+      consumes:
+      - application/json
+      description: create a new basket
+      parameters:
+      - description: basket
+        in: body
+        name: basket
+        schema:
+          $ref: '#/definitions/models.CreateBasket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Basket'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Create a new basket
+      tags:
+      - basket
+  /basket/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete basket
+      parameters:
+      - description: basket_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Delete basket
+      tags:
+      - basket
+    get:
+      consumes:
+      - application/json
+      description: get basket by id
+      parameters:
+      - description: basket_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Basket'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get basket by id
+      tags:
+      - basket
+    put:
+      consumes:
+      - application/json
+      description: get basket
+      parameters:
+      - description: basket_id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: basket
+        in: body
+        name: basket
+        schema:
+          $ref: '#/definitions/models.UpdateBasket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Basket'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Update basket
+      tags:
+      - basket
+  /baskets:
+    get:
+      consumes:
+      - application/json
+      description: get basket list
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      - description: search
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BasketsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get basket list
+      tags:
+      - basket
   /branch:
     post:
       consumes:
@@ -1133,6 +1418,181 @@ paths:
       summary: Update repository
       tags:
       - repository
+  /rtransaction:
+    post:
+      consumes:
+      - application/json
+      description: create a new rtransaction
+      parameters:
+      - description: rtransaction
+        in: body
+        name: rtransaction
+        schema:
+          $ref: '#/definitions/models.CreateRepositoryTransaction'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RepositoryTransaction'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Create a new rtransaction
+      tags:
+      - rtransaction
+  /rtransaction/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete rtransaction
+      parameters:
+      - description: rtransaction_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Delete rtransaction
+      tags:
+      - rtransaction
+    get:
+      consumes:
+      - application/json
+      description: get rtransaction by id
+      parameters:
+      - description: rtransaction_id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RepositoryTransaction'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get rtransaction by id
+      tags:
+      - rtransaction
+    put:
+      consumes:
+      - application/json
+      description: get rtransaction
+      parameters:
+      - description: rtransaction_id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: rtransaction
+        in: body
+        name: rtransaction
+        schema:
+          $ref: '#/definitions/models.UpdateRepositoryTransaction'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Repository'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Update rtransaction
+      tags:
+      - rtransaction
+  /rtransactions:
+    get:
+      consumes:
+      - application/json
+      description: get rtransaction list
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      - description: search
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RepositoryTransactionsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get rtransaction list
+      tags:
+      - rtransaction
   /sale:
     post:
       consumes:

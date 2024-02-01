@@ -10,6 +10,8 @@ type IStorage interface {
 	StaffTarif() IStaffTarifRepo
 	Staff() IStaffRepo
 	Repository() IRepositoryRepo
+	Basket() IBasketRepo
+	RTransaction() IRepositoryTransactionRepo
 	Category() ICategory
 	Product() IProducts
 	Branch() IBranchStorage
@@ -44,6 +46,19 @@ type IRepositoryRepo interface {
 }
 
 type IBasketRepo interface {
+	Create(models.CreateBasket) (string, error)
+	GetByID(models.PrimaryKey) (models.Basket, error)
+	GetList(models.GetListRequest) (models.BasketsResponse, error)
+	Update(models.UpdateBasket) (string, error)
+	Delete(string) error
+}
+
+type IRepositoryTransactionRepo interface {
+	Create(models.CreateRepositoryTransaction) (string, error)
+	GetByID(models.PrimaryKey) (models.RepositoryTransaction, error)
+	GetList(models.GetListRequest) (models.RepositoryTransactionsResponse, error)
+	Update(models.UpdateRepositoryTransaction) (string, error)
+	Delete(string) error
 }
 
 type ICategory interface {

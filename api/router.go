@@ -70,6 +70,22 @@ func New(storage storage.IStorage) *gin.Engine {
 
 	//repository-transaction bolsh kere
 
+	// Basket
+
+	r.POST("/basket", h.CreateBasket)
+	r.GET("/basket/:id", h.GetBasket)
+	r.GET("/baskets", h.GetBasket)
+	r.PUT("/basket/:id", h.UpdateBasket)
+	r.DELETE("/basket/:id", h.DeleteBasket)
+
+	// Repository Transaction
+
+	r.POST("/rtransaction", h.CreateRepositoryTransaction)
+	r.GET("/rtransaction/:id", h.GetRepositoryTransaction)
+	r.GET("/rtransactions", h.GetRepositoryTransactionList)
+	r.PUT("/rtransaction/:id", h.UpdateRepositoryTransaction)
+	r.DELETE("/rtransaction/:id", h.DeleteRepositoryTransaction)
+
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run(":8080")
 	return r

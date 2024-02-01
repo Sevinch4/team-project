@@ -116,7 +116,7 @@ func (s *repositoryRepo) GetList(request models.GetListRequest) (models.Reposito
 }
 
 func (s *repositoryRepo) Update(repository models.UpdateRepository) (string, error) {
-	query := `UPDATE repositories SET branch_id = $1, product_id = $2, count = $3 WHERE id = $4`
+	query := `UPDATE repositories SET branch_id = $1, product_id = $2, count = $3, updated_at = NOW() WHERE id = $4`
 
 	_, err := s.DB.Exec(context.Background(), query,
 		&repository.BranchID,

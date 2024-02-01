@@ -73,3 +73,11 @@ func (s *Store) Staff() storage.IStaffRepo {
 func (s *Store) Repository() storage.IRepositoryRepo {
 	return NewRepositoryRepo(s.Pool)
 }
+
+func (s *Store) Basket() storage.IBasketRepo {
+	return NewBasketRepo(s.Pool)
+}
+
+func (s *Store) RTransaction() storage.IRepositoryTransactionRepo {
+	return NewRepositoryTransactionRepo(s.Pool)
+}
