@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 	"teamProject/api/models"
@@ -20,21 +21,21 @@ import (
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) CreateBasket(c *gin.Context)  {
+func (h Handler) CreateBasket(c *gin.Context) {
 	basket := models.CreateBasket{}
 
-	if err :=  c.ShouldBindJSON(&basket); err != nil {
+	if err := c.ShouldBindJSON(&basket); err != nil {
 		handleResponse(c, "error while reading body", http.StatusBadRequest, err.Error())
 		return
 	}
 
-	id, err :=  h.storage.Basket().Create(basket)
+	id, err := h.storage.Basket().Create(context.Background(), basket)
 	if err != nil {
 		handleResponse(c, "error while creating basket", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	createdBasket, err := h.storage.Basket().GetByID(models.PrimaryKey{
+	createdBasket, err := h.storage.Basket().GetByID(context.Background(), models.PrimaryKey{
 		ID: id,
 	})
 	if err != nil {
@@ -57,12 +58,13 @@ func (h *Handler) CreateBasket(c *gin.Context)  {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) GetBasket(c *gin.Context)  {
+func (h Handler) GetBasket(c *gin.Context) {
 	uid := c.Param("id")
 
-	basket, err := h.storage.Basket().GetByID(models.PrimaryKey{ID: uid})
+	basket, err := h.storage.Basket().GetByID(context.Background(), models.PrimaryKey{ID: uid})
 	if err != nil {
 		handleResponse(c, "error while getting basket by ID", http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	handleResponse(c, "", http.StatusOK, basket)
@@ -82,7 +84,7 @@ func (h *Handler) GetBasket(c *gin.Context)  {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) GetBasketList(c *gin.Context) {
+func (h Handler) GetBasketList(c *gin.Context) {
 	var (
 		page, limit int
 		err         error
@@ -104,7 +106,7 @@ func (h *Handler) GetBasketList(c *gin.Context) {
 
 	search := c.Query("search")
 
-	response, err := h.storage.Basket().GetList(models.GetListRequest{
+	response, err := h.storage.Basket().GetList(context.Background(), models.GetListRequest{
 		Page:   page,
 		Limit:  limit,
 		Search: search,
@@ -130,7 +132,7 @@ func (h *Handler) GetBasketList(c *gin.Context) {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) UpdateBasket(c *gin.Context) {
+func (h Handler) UpdateBasket(c *gin.Context) {
 	uid := c.Param("id")
 
 	basket := models.UpdateBasket{}
@@ -140,12 +142,12 @@ func (h *Handler) UpdateBasket(c *gin.Context) {
 	}
 
 	basket.ID = uid
-	if _, err := h.storage.Basket().Update(basket); err != nil {
+	if _, err := h.storage.Basket().Update(context.Background(), basket); err != nil {
 		handleResponse(c, "error while updating basket ", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	updatedBasket, err := h.storage.Basket().GetByID(models.PrimaryKey{ID: uid})
+	updatedBasket, err := h.storage.Basket().GetByID(context.Background(), models.PrimaryKey{ID: uid})
 	if err != nil {
 		handleResponse(c, "error while getting by ID", http.StatusInternalServerError, err.Error())
 		return
@@ -166,13 +168,13 @@ func (h *Handler) UpdateBasket(c *gin.Context) {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) DeleteBasket(c *gin.Context) {
+func (h Handler) DeleteBasket(c *gin.Context) {
 	uid := c.Param("id")
 
-	if err := h.storage.Basket().Delete(uid); err != nil {
+	if err := h.storage.Basket().Delete(context.Background(), uid); err != nil {
 		handleResponse(c, "error while deleting basket ", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	handleResponse(c, "", http.StatusOK, "basket tariff deleted")
+	handleResponse(c, "", http.StatusOK, "basket deleted")
 }

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 	"teamProject/api/models"
@@ -22,7 +23,7 @@ import (
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) CreateStaff(c *gin.Context) {
+func (h Handler) CreateStaff(c *gin.Context) {
 	staff := models.CreateStaff{}
 
 	if err := c.ShouldBindJSON(&staff); err != nil {
@@ -30,14 +31,14 @@ func (h *Handler) CreateStaff(c *gin.Context) {
 		return
 	}
 
-	id, err := h.storage.Staff().Create(staff)
+	id, err := h.storage.Staff().Create(context.Background(), staff)
 
 	if err != nil {
 		handleResponse(c, "error while creating staff ", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	createdStaffTarif, err := h.storage.Staff().StaffByID(models.PrimaryKey{ID: id})
+	createdStaffTarif, err := h.storage.Staff().StaffByID(context.Background(), models.PrimaryKey{ID: id})
 	if err != nil {
 		handleResponse(c, "error while getting by ID", http.StatusInternalServerError, err.Error())
 		return
@@ -58,10 +59,10 @@ func (h *Handler) CreateStaff(c *gin.Context) {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) GetStaff(c *gin.Context) {
+func (h Handler) GetStaff(c *gin.Context) {
 	uid := c.Param("id")
 
-	staffTarif, err := h.storage.Staff().StaffByID(models.PrimaryKey{ID: uid})
+	staffTarif, err := h.storage.Staff().StaffByID(context.Background(), models.PrimaryKey{ID: uid})
 	if err != nil {
 		handleResponse(c, "error while getting staff  by ID", http.StatusInternalServerError, err.Error())
 		return
@@ -84,7 +85,7 @@ func (h *Handler) GetStaff(c *gin.Context) {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) GetStaffList(c *gin.Context) {
+func (h Handler) GetStaffList(c *gin.Context) {
 	var (
 		page, limit int
 		err         error
@@ -106,7 +107,7 @@ func (h *Handler) GetStaffList(c *gin.Context) {
 
 	search := c.Query("search")
 
-	response, err := h.storage.Staff().GetStaffTList(models.GetListRequest{
+	response, err := h.storage.Staff().GetStaffTList(context.Background(), models.GetListRequest{
 		Page:   page,
 		Limit:  limit,
 		Search: search,
@@ -132,7 +133,7 @@ func (h *Handler) GetStaffList(c *gin.Context) {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) UpdateStaff(c *gin.Context) {
+func (h Handler) UpdateStaff(c *gin.Context) {
 	uid := c.Param("id")
 
 	staff := models.UpdateStaff{}
@@ -142,12 +143,12 @@ func (h *Handler) UpdateStaff(c *gin.Context) {
 	}
 
 	staff.ID = uid
-	if _, err := h.storage.Staff().UpdateStaff(staff); err != nil {
+	if _, err := h.storage.Staff().UpdateStaff(context.Background(), staff); err != nil {
 		handleResponse(c, "error while updating staff ", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	updatedStaff, err := h.storage.Staff().StaffByID(models.PrimaryKey{ID: uid})
+	updatedStaff, err := h.storage.Staff().StaffByID(context.Background(), models.PrimaryKey{ID: uid})
 	if err != nil {
 		handleResponse(c, "error while getting by ID", http.StatusInternalServerError, err.Error())
 		return
@@ -168,15 +169,15 @@ func (h *Handler) UpdateStaff(c *gin.Context) {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) DeleteStaff(c *gin.Context) {
+func (h Handler) DeleteStaff(c *gin.Context) {
 	uid := c.Param("id")
 
-	if err := h.storage.Staff().DeleteStaff(uid); err != nil {
+	if err := h.storage.Staff().DeleteStaff(context.Background(), uid); err != nil {
 		handleResponse(c, "error while deleting staff ", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	handleResponse(c, "", http.StatusOK, "staff tariff deleted")
+	handleResponse(c, "", http.StatusOK, "staff deleted")
 }
 
 // UpdateStaffPassword godoc
@@ -208,7 +209,7 @@ func (h Handler) UpdateStaffPassword(c *gin.Context) {
 
 	updateStaffPassword.ID = uid.String()
 
-	oldPassword, err := h.storage.Staff().GetPassword(updateStaffPassword.ID)
+	oldPassword, err := h.storage.Staff().GetPassword(context.Background(), updateStaffPassword.ID)
 	if err != nil {
 		handleResponse(c, "error while getting password by id", http.StatusInternalServerError, err.Error())
 		return
@@ -224,7 +225,7 @@ func (h Handler) UpdateStaffPassword(c *gin.Context) {
 		return
 	}
 
-	if err = h.storage.Staff().UpdatePassword(updateStaffPassword); err != nil {
+	if err = h.storage.Staff().UpdatePassword(context.Background(), updateStaffPassword); err != nil {
 		handleResponse(c, "error while updating staff password by id", http.StatusInternalServerError, err.Error())
 		return
 	}

@@ -2,9 +2,9 @@ CREATE TYPE payment_type_enum AS ENUM ('card', 'cash');
 CREATE TYPE status_enum AS ENUM ('in_process', 'success', 'cancel');
 CREATE TYPE transaction_type_enum AS ENUM ('withdraw', 'topup');
 CREATE TYPE source_type_enum AS ENUM ('bonus', 'sales');
-CREATE TYPE tarif_type_enum AS ENUM ('percent', 'fixed');
+CREATE TYPE tariff_type_enum AS ENUM ('percent', 'fixed');
 CREATE TYPE staff_type_enum AS ENUM ('shop_assistant', 'cashier');
-create type repostitory_transaction_type_enum as enum ('minus', 'plus');
+create type repository_transaction_type_enum as enum ('minus', 'plus');
 
 create table categories(
                            id varchar(40) primary key not null ,
@@ -70,10 +70,10 @@ create table baskets(
                         deleted_at TIMESTAMP DEFAULT NULL
 );
 
-CREATE TABLE staff_tarifs (
+CREATE TABLE staff_tariffs (
                               id UUID PRIMARY KEY,
                               name VARCHAR(30) UNIQUE NOT NULL,
-                              tarif_type tarif_type_enum NOT NULL,
+                              tariff_type tariff_type_enum NOT NULL,
                               amount_for_cash INT,
                               amount_for_card INT,
                               created_at TIMESTAMP DEFAULT NOW(),
@@ -84,7 +84,7 @@ CREATE TABLE staff_tarifs (
 CREATE TABLE staffs (
                         id UUID PRIMARY KEY,
                         branch_id UUID REFERENCES branches(id),
-                        tariff_id UUID REFERENCES staff_tarifs(id),
+                        tariff_id UUID REFERENCES staff_tariffs(id),
                         staff_type staff_type_enum NOT NULL,
                         name VARCHAR(30),
                         balance INT DEFAULT 0,
@@ -115,7 +115,10 @@ create table repository_transactions(
                                         branch_id uuid references branches(id),
                                         staff_id uuid references staffs(id),
                                         product_id uuid references products(id),
-                                        repository_transaction_type repostitory_transaction_type_enum,
+                                        repository_transaction_type repository_transaction_type_enum,
                                         price int,
-                                        quantity int
+                                        quantity int,
+                                        created_at TIMESTAMP DEFAULT NOW(),
+                                        updated_at TIMESTAMP DEFAULT NOW(),
+                                        deleted_at TIMESTAMP DEFAULT NULL
 );

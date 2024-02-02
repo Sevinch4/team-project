@@ -3,13 +3,11 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
 	"teamProject/api/models"
 	"teamProject/storage"
-	"time"
-
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type repositoryTransactionRepo struct {
@@ -22,41 +20,41 @@ func NewRepositoryTransactionRepo(DB *pgxpool.Pool) storage.IRepositoryTransacti
 	}
 }
 
-func (s *repositoryTransactionRepo) Create(rtransaction models.CreateRepositoryTransaction) (string, error) {
+func (s *repositoryTransactionRepo) Create(ctx context.Context, rtransaction models.CreateRepositoryTransaction) (string, error) {
 	id := uuid.New().String()
-	createdAt := time.Now()
 
-	if _, err := s.DB.Exec(context.Background(), `INSERT INTO repository_transactions
-		(id, staff_id, product_id, repository_transaction_type, price, quantity, created_at)
-			VALUES($1, $2, $3, $4, $5, $6, $7)`,
-			id,
-			rtransaction.StaffID,
-			rtransaction.ProductID,
-			rtransaction.RepositoryTransactionType,
-			rtransaction.Price,
-			rtransaction.Quantity,
-			createdAt,
+	if _, err := s.DB.Exec(ctx, `INSERT INTO repository_transactions
+		(id, staff_id, product_id, repository_transaction_type, price, quantity)
+			VALUES($1, $2, $3, $4, $5, $6)`,
+		id,
+		rtransaction.StaffID,
+		rtransaction.ProductID,
+		rtransaction.RepositoryTransactionType,
+		rtransaction.Price,
+		rtransaction.Quantity,
 	); err != nil {
-        log.Println("Error while inserting data:", err)
-        return "", err
-    }
+		log.Println("Error while inserting data:", err)
+		return "", err
+	}
 
-    return id, nil
+	return id, nil
 }
 
-func (s *repositoryTransactionRepo) GetByID(id models.PrimaryKey) (models.RepositoryTransaction, error) {
+func (s *repositoryTransactionRepo) GetByID(ctx context.Context, id models.PrimaryKey) (models.RepositoryTransaction, error) {
 	rtransaction := models.RepositoryTransaction{}
-	query := `SELECT id, staff_id, product_id, repository_transaction_type, price, quantity, created_at, updated_at, deleted_at FROM repository_transactions WHERE id = $1`
+	query := `SELECT id, staff_id, product_id, repository_transaction_type, price, quantity, created_at, updated_at 
+							FROM repository_transactions WHERE id = $1 and deleted_at is null
+`
 
-	err := s.DB.QueryRow(context.Background(), query, id.ID).Scan(
+	err := s.DB.QueryRow(ctx, query, id.ID).Scan(
 		&rtransaction.ID,
 		&rtransaction.StaffID,
 		&rtransaction.ProductID,
 		&rtransaction.RepositoryTransactionType,
 		&rtransaction.Price,
 		&rtransaction.Quantity,
+		&rtransaction.CreatedAt,
 		&rtransaction.UpdatedAt,
-		&rtransaction.DeletedAt,
 	)
 	if err != nil {
 		log.Println("Error while selecting repository by ID:", err)
@@ -66,30 +64,32 @@ func (s *repositoryTransactionRepo) GetByID(id models.PrimaryKey) (models.Reposi
 	return rtransaction, nil
 }
 
-func (s *repositoryTransactionRepo) GetList(req models.GetListRequest) (models.RepositoryTransactionsResponse, error) {
+func (s *repositoryTransactionRepo) GetList(ctx context.Context, req models.GetListRequest) (models.RepositoryTransactionsResponse, error) {
 	var (
-		rtransactions = []models.RepositoryTransaction{}
-		count  int
+		rtransactions []models.RepositoryTransaction
+		count         int
 	)
 
-	countQuery := `SELECT COUNT(*) FROM repository_transactions`
+	countQuery := `SELECT COUNT(*) FROM repository_transactions where deleted_at is null `
 	if req.Search != "" {
-		countQuery += fmt.Sprintf(`WHERE quantity ILIKE '%%%s%%'`, req.Search)
+		countQuery += fmt.Sprintf(` and quantity = %s`, req.Search)
 	}
 
-	err := s.DB.QueryRow(context.Background(), countQuery).Scan(&count)
+	err := s.DB.QueryRow(ctx, countQuery).Scan(&count)
 	if err != nil {
 		log.Println("Error while scanning count of repository_transactions:", err)
 		return models.RepositoryTransactionsResponse{}, err
 	}
 
-	query := `SELECT id, staff_id, product_id, repository_transaction_type, price, quantity, created_at, updated_at, deleted_at FROM repository_transactions where deleted_at is null`
+	query := `SELECT id, staff_id, product_id, repository_transaction_type, price, quantity, created_at, updated_at 
+							FROM repository_transactions where deleted_at is null
+`
 	if req.Search != "" {
-		query += fmt.Sprintf(` WHERE quantity ILIKE '%%%s%%'`, req.Search)
+		query += fmt.Sprintf(` and quantity = %s`, req.Search)
 	}
-	query += ` LIMIT $1 OFFSET $2`
+	query += ` order by created_at desc LIMIT $1 OFFSET $2 `
 
-	rows, err := s.DB.Query(context.Background(), query, req.Limit, (req.Page-1)*req.Limit)
+	rows, err := s.DB.Query(ctx, query, req.Limit, (req.Page-1)*req.Limit)
 	if err != nil {
 		log.Println("Error while querying repository_transactions:", err)
 		return models.RepositoryTransactionsResponse{}, err
@@ -105,8 +105,8 @@ func (s *repositoryTransactionRepo) GetList(req models.GetListRequest) (models.R
 			&rtransaction.RepositoryTransactionType,
 			&rtransaction.Price,
 			&rtransaction.Quantity,
+			&rtransaction.CreatedAt,
 			&rtransaction.UpdatedAt,
-			&rtransaction.DeletedAt,
 		)
 		if err != nil {
 			log.Println("Error while scanning row of repository_transactions:", err)
@@ -117,33 +117,35 @@ func (s *repositoryTransactionRepo) GetList(req models.GetListRequest) (models.R
 
 	return models.RepositoryTransactionsResponse{
 		RepositoryTransactions: rtransactions,
-		Count:  count,
+		Count:                  count,
 	}, nil
 }
 
-func (s *repositoryTransactionRepo) Update(rtransaction models.UpdateRepositoryTransaction) (string, error) {
-	query := `UPDATE repository_transactions SET staff_id = $1, product_id = $2, repository_transaction_type = $3, price = $4, quantity = $5, updated_at = NOW() WHERE id = $6`
+func (s *repositoryTransactionRepo) Update(ctx context.Context, transaction models.UpdateRepositoryTransaction) (string, error) {
+	query := `UPDATE repository_transactions SET staff_id = $1, product_id = $2, repository_transaction_type = $3, 
+                                   price = $4, quantity = $5, updated_at = NOW() WHERE id = $6
+`
 
-	_, err := s.DB.Exec(context.Background(), query,
-		&rtransaction.StaffID,
-		&rtransaction.ProductID,
-		&rtransaction.RepositoryTransactionType,
-		&rtransaction.Price,
-		&rtransaction.Quantity,
-		&rtransaction.ID,
+	_, err := s.DB.Exec(ctx, query,
+		&transaction.StaffID,
+		&transaction.ProductID,
+		&transaction.RepositoryTransactionType,
+		&transaction.Price,
+		&transaction.Quantity,
+		&transaction.ID,
 	)
 	if err != nil {
 		log.Println("Error while repository_transactions Repository :", err)
 		return "", err
 	}
 
-	return rtransaction.ID, nil
+	return transaction.ID, nil
 }
 
-func (s *repositoryTransactionRepo) Delete(id string) error {
+func (s *repositoryTransactionRepo) Delete(ctx context.Context, id string) error {
 	query := `UPDATE repository_transactions SET deleted_at = NOW() WHERE id = $1`
 
-	_, err := s.DB.Exec(context.Background(), query, id)
+	_, err := s.DB.Exec(ctx, query, id)
 	if err != nil {
 		log.Println("Error while deleting repository_transactions ", err)
 		return err

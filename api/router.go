@@ -50,20 +50,21 @@ func New(storage storage.IStorage) *gin.Engine {
 
 	r.POST("/basket", h.CreateBasket)
 	r.GET("/basket/:id", h.GetBasket)
-	r.GET("/baskets", h.GetBasket)
+	r.GET("/baskets", h.GetBasketList)
 	r.PUT("/basket/:id", h.UpdateBasket)
 	r.DELETE("/basket/:id", h.DeleteBasket)
 
-	r.POST("/stafftarif", h.CreateStaffTarif)
-	r.GET("/stafftarif/:id", h.GetStaffTarif)
-	r.GET("/stafftarifs", h.GetStaffTarifList)
-	r.PUT("/stafftarif/:id", h.UpdateStaffTarif)
-	r.DELETE("/stafftarif/:id", h.DeleteStaffTarif)
+	r.POST("/staff-tariff", h.CreateStaffTariff)
+	r.GET("/staff-tariff/:id", h.GetStaffTariff)
+	r.GET("/staff-tariffs", h.GetStaffTariffList)
+	r.PUT("/staff-tariff/:id", h.UpdateStaffTariff)
+	r.DELETE("/staff-tariff/:id", h.DeleteStaffTariff)
 
 	r.POST("/staff", h.CreateStaff)
 	r.GET("/staff/:id", h.GetStaff)
 	r.GET("/staffs", h.GetStaffList)
 	r.PUT("/staff/:id", h.UpdateStaff)
+	r.PATCH("/staff/:id", h.UpdateStaffPassword)
 	r.DELETE("/staff/:id", h.DeleteStaff)
 
 	r.POST("/transaction", h.CreateTransaction)

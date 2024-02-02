@@ -72,9 +72,9 @@ func (t transactionRepo) GetList(ctx context.Context, request models.Transaction
 	if fromAmount != 0 && toAmount != 0 {
 		countQuery += fmt.Sprintf(` and amount between %f and %f`, fromAmount, toAmount)
 	} else if fromAmount != 0 {
-		countQuery += ` and amount = ` + strconv.FormatFloat(fromAmount, 'f', 2, 64)
+		countQuery += ` and amount <= ` + strconv.FormatFloat(fromAmount, 'f', 2, 64)
 	} else {
-		countQuery += ` and amount = ` + strconv.FormatFloat(toAmount, 'f', 2, 64)
+		countQuery += ` and amount >= ` + strconv.FormatFloat(toAmount, 'f', 2, 64)
 
 	}
 	if err := t.db.QueryRow(ctx, countQuery).Scan(&count); err != nil {
@@ -86,15 +86,16 @@ func (t transactionRepo) GetList(ctx context.Context, request models.Transaction
        						description, created_at, updated_at from transactions where deleted_at is null `
 
 	if fromAmount != 0 && toAmount != 0 {
-		query += fmt.Sprintf(` and amount between %f and %f`, fromAmount, toAmount)
+		query += fmt.Sprintf(` and amount between %f and %f  order by amount asc, `, fromAmount, toAmount)
 	} else if fromAmount != 0 {
-		query += ` and amount = ` + strconv.FormatFloat(fromAmount, 'f', 2, 64)
+		query += ` and amount <= ` + strconv.FormatFloat(fromAmount, 'f', 2, 64) + `  order by amount asc, `
 	} else {
-		query += ` and amount = ` + strconv.FormatFloat(toAmount, 'f', 2, 64)
+		query += ` and amount >= ` + strconv.FormatFloat(toAmount, 'f', 2, 64) + ` order by amount asc, `
 
 	}
 
-	query += ` LIMIT $1 OFFSET $2`
+	query += ` created_at desc LIMIT $1 OFFSET $2 `
+
 	rows, err := t.db.Query(ctx, query, request.Limit, offset)
 	if err != nil {
 		fmt.Println("error is while selecting all from transactions", err.Error())

@@ -7,7 +7,7 @@ import (
 
 type IStorage interface {
 	Close()
-	StaffTarif() IStaffTarifRepo
+	StaffTariff() IStaffTariffRepo
 	Staff() IStaffRepo
 	Repository() IRepositoryRepo
 	Basket() IBasketRepo
@@ -19,46 +19,46 @@ type IStorage interface {
 	Transaction() ITransactionStorage
 }
 
-type IStaffTarifRepo interface {
-	Create(tarif models.CreateStaffTarif) (string, error)
-	GetStaffTarifByID(models.PrimaryKey) (models.StaffTarif, error)
-	GetStaffTarifList(req models.GetListRequest) (models.StaffTarifResponse, error)
-	UpdateStaffTarif(models.UpdateStaffTarif) (string, error)
-	DeleteStaffTarif(id string) error
+type IStaffTariffRepo interface {
+	Create(context.Context, models.CreateStaffTariff) (string, error)
+	GetStaffTariffByID(context.Context, models.PrimaryKey) (models.StaffTariff, error)
+	GetStaffTariffList(context.Context, models.GetListRequest) (models.StaffTariffResponse, error)
+	UpdateStaffTariff(context.Context, models.UpdateStaffTariff) (string, error)
+	DeleteStaffTariff(context.Context, string) error
 }
 
 type IStaffRepo interface {
-	Create(models.CreateStaff) (string, error)
-	StaffByID(models.PrimaryKey) (models.Staff, error)
-	GetStaffTList(models.GetListRequest) (models.StaffsResponse, error)
-	UpdateStaff(models.UpdateStaff) (string, error)
-	DeleteStaff(id string) error
-	GetPassword(id string) (string, error)
-	UpdatePassword(models.UpdateStaffPassword) error
+	Create(context.Context, models.CreateStaff) (string, error)
+	StaffByID(context.Context, models.PrimaryKey) (models.Staff, error)
+	GetStaffTList(context.Context, models.GetListRequest) (models.StaffsResponse, error)
+	UpdateStaff(context.Context, models.UpdateStaff) (string, error)
+	DeleteStaff(context.Context, string) error
+	GetPassword(context.Context, string) (string, error)
+	UpdatePassword(context.Context, models.UpdateStaffPassword) error
 }
 
 type IRepositoryRepo interface {
-	Create(models.CreateRepository) (string, error)
-	GetByID(models.PrimaryKey) (models.Repository, error)
-	GetList(models.GetListRequest) (models.RepositoriesResponse, error)
-	Update(models.UpdateRepository) (string, error)
-	Delete(string) error
+	Create(context.Context, models.CreateRepository) (string, error)
+	GetByID(context.Context, models.PrimaryKey) (models.Repository, error)
+	GetList(context.Context, models.GetListRequest) (models.RepositoriesResponse, error)
+	Update(context.Context, models.UpdateRepository) (string, error)
+	Delete(context.Context, string) error
 }
 
 type IBasketRepo interface {
-	Create(models.CreateBasket) (string, error)
-	GetByID(models.PrimaryKey) (models.Basket, error)
-	GetList(models.GetListRequest) (models.BasketsResponse, error)
-	Update(models.UpdateBasket) (string, error)
-	Delete(string) error
+	Create(context.Context, models.CreateBasket) (string, error)
+	GetByID(context.Context, models.PrimaryKey) (models.Basket, error)
+	GetList(context.Context, models.GetListRequest) (models.BasketsResponse, error)
+	Update(context.Context, models.UpdateBasket) (string, error)
+	Delete(context.Context, string) error
 }
 
 type IRepositoryTransactionRepo interface {
-	Create(models.CreateRepositoryTransaction) (string, error)
-	GetByID(models.PrimaryKey) (models.RepositoryTransaction, error)
-	GetList(models.GetListRequest) (models.RepositoryTransactionsResponse, error)
-	Update(models.UpdateRepositoryTransaction) (string, error)
-	Delete(string) error
+	Create(context.Context, models.CreateRepositoryTransaction) (string, error)
+	GetByID(context.Context, models.PrimaryKey) (models.RepositoryTransaction, error)
+	GetList(context.Context, models.GetListRequest) (models.RepositoryTransactionsResponse, error)
+	Update(context.Context, models.UpdateRepositoryTransaction) (string, error)
+	Delete(context.Context, string) error
 }
 
 type ICategory interface {

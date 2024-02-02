@@ -59,11 +59,11 @@ func (p productRepo) GetList(ctx context.Context, request models.ProductGetListR
 	)
 	countQuery = `select count(1) from products where deleted_at is null `
 
-	if name != "" {
-		countQuery += fmt.Sprintf(` and name ilike '%%%s%%' `, name)
-	}
-
-	if barcode != 0 {
+	if name != "" && barcode != 0 {
+		countQuery += fmt.Sprintf(` and name ilike '%s' && barcode = %s`, name, strconv.Itoa(barcode))
+	} else if name != "" {
+		countQuery += fmt.Sprintf(` and name ilike '%s' `, name)
+	} else if barcode != 0 {
 		countQuery += ` and barcode = ` + strconv.Itoa(barcode)
 	}
 
@@ -75,14 +75,15 @@ func (p productRepo) GetList(ctx context.Context, request models.ProductGetListR
 	query = `select  id, name, price, barcode, category_id, created_at, updated_at 
 							from products where deleted_at is null `
 
-	if name != "" {
-		query += fmt.Sprintf(` and name ilike '%%%s%%' `, name)
-	}
-	if barcode != 0 {
+	if name != "" && barcode != 0 {
+		query += fmt.Sprintf(` and name ilike '%s' && barcode = %s`, name, strconv.Itoa(barcode))
+	} else if name != "" {
+		query += fmt.Sprintf(` and name ilike '%s' `, name)
+	} else if barcode != 0 {
 		query += ` and barcode = ` + strconv.Itoa(barcode)
 	}
 
-	query += ` LIMIT $1 OFFSET $2`
+	query += ` order by created_at desc LIMIT $1 OFFSET $2 `
 	rows, err := p.db.Query(ctx, query, request.Limit, offset)
 	if err != nil {
 		fmt.Println("error is while selecting all", err.Error())

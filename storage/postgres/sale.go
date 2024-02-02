@@ -85,7 +85,7 @@ func (s saleRepo) GetList(ctx context.Context, request models.GetListRequest) (m
 		query += fmt.Sprintf(` AND client_name ilike '%%%s%%' `, search)
 	}
 
-	query += ` LIMIT $1 OFFSET $2`
+	query += ` order by created_at desc LIMIT $1 OFFSET $2 `
 
 	rows, err := s.db.Query(ctx, query, request.Limit, offset)
 	for rows.Next() {

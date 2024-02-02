@@ -3,13 +3,11 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
 	"teamProject/api/models"
 	"teamProject/storage"
-	"time"
-
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type basketRepo struct {
@@ -22,19 +20,17 @@ func NewBasketRepo(DB *pgxpool.Pool) storage.IBasketRepo {
 	}
 }
 
-func (s *basketRepo) Create(basket models.CreateBasket) (string, error) {
+func (s *basketRepo) Create(ctx context.Context, basket models.CreateBasket) (string, error) {
 	id := uuid.New().String()
-	createdAT := time.Now()
 
-	if _, err := s.DB.Exec(context.Background(), `INSERT INTO baskets 
-		(id, sale_id, product_id, storage_trunsaction_type, price, quantity, created_at)
-			VALUES($1, $2, $3, $4, $5, $6, $7)`,
+	if _, err := s.DB.Exec(ctx, `INSERT INTO baskets 
+		(id, sale_id, product_id, price, quantity)
+			VALUES($1, $2, $3, $4, $5)`,
 		id,
 		basket.SaleID,
 		basket.ProductID,
 		basket.Quantity,
 		basket.Price,
-		createdAT,
 	); err != nil {
 		log.Println("Error while inserting data:", err)
 		return "", err
@@ -43,10 +39,11 @@ func (s *basketRepo) Create(basket models.CreateBasket) (string, error) {
 	return id, nil
 }
 
-func (s *basketRepo) GetByID(id models.PrimaryKey) (models.Basket, error) {
+func (s *basketRepo) GetByID(ctx context.Context, id models.PrimaryKey) (models.Basket, error) {
 	basket := models.Basket{}
-	query := `SELECT id, sale_id, product_id, quantity, price, created_at, updated_at, deleted_at FROM baskets WHERE id = $1`
-	err := s.DB.QueryRow(context.Background(), query, id.ID).Scan(
+	query := `SELECT id, sale_id, product_id, quantity, price, created_at, updated_at
+				FROM baskets WHERE id = $1 and  deleted_at is null`
+	err := s.DB.QueryRow(ctx, query, id.ID).Scan(
 		&basket.ID,
 		&basket.SaleID,
 		&basket.ProductID,
@@ -54,7 +51,6 @@ func (s *basketRepo) GetByID(id models.PrimaryKey) (models.Basket, error) {
 		&basket.Price,
 		&basket.CreatedAt,
 		&basket.UpdatedAt,
-		&basket.DeletedAt,
 	)
 	if err != nil {
 		log.Println("Error while selecting basket by ID:", err)
@@ -63,30 +59,31 @@ func (s *basketRepo) GetByID(id models.PrimaryKey) (models.Basket, error) {
 	return basket, nil
 }
 
-func (s *basketRepo) GetList(request models.GetListRequest) (models.BasketsResponse, error) {
+func (s *basketRepo) GetList(ctx context.Context, request models.GetListRequest) (models.BasketsResponse, error) {
 	var (
 		baskets = []models.Basket{}
 		count   int
 	)
 
-	countQuery := `SELECT COUNT(*) FROM baskets`
+	countQuery := `SELECT COUNT(*) FROM baskets where deleted_at is null`
 	if request.Search != "" {
-		countQuery += fmt.Sprintf(` WHERE branch_id ILIKE '%%%s%%'`, request.Search)
+		countQuery += fmt.Sprintf(` and sale_id = '%s'`, request.Search)
 	}
 
-	err := s.DB.QueryRow(context.Background(), countQuery).Scan(&count)
+	err := s.DB.QueryRow(ctx, countQuery).Scan(&count)
 	if err != nil {
 		log.Println("Error while scanning count of repositories:", err)
 		return models.BasketsResponse{}, err
 	}
 
-	query := `SELECT id, sale_id, product_id, quantity, price, created_at, updated_at, deleted_at FROM baskets where deleted_at is null`
+	query := `SELECT id, sale_id, product_id, quantity, price, created_at, updated_at
+						FROM baskets where deleted_at is null`
 	if request.Search != "" {
-		query += fmt.Sprintf(` WHERE branch_id ILIKE '%%%s%%'`, request.Search)
+		query += fmt.Sprintf(` and sale_id = '%s'`, request.Search)
 	}
-	query += ` LIMIT $1 OFFSET $2`
+	query += ` order by created_at desc LIMIT $1 OFFSET $2 `
 
-	rows, err := s.DB.Query(context.Background(), query, request.Limit, (request.Page-1)*request.Limit)
+	rows, err := s.DB.Query(ctx, query, request.Limit, (request.Page-1)*request.Limit)
 	if err != nil {
 		log.Println("Error while querying baskets:", err)
 		return models.BasketsResponse{}, err
@@ -103,7 +100,6 @@ func (s *basketRepo) GetList(request models.GetListRequest) (models.BasketsRespo
 			&basket.Price,
 			&basket.CreatedAt,
 			&basket.UpdatedAt,
-			&basket.DeletedAt,
 		)
 		if err != nil {
 			log.Println("Error while scanning row of baskets:", err)
@@ -118,10 +114,10 @@ func (s *basketRepo) GetList(request models.GetListRequest) (models.BasketsRespo
 	}, nil
 }
 
-func (s *basketRepo) Update(basket models.UpdateBasket) (string, error) {
+func (s *basketRepo) Update(ctx context.Context, basket models.UpdateBasket) (string, error) {
 	query := `UPDATE baskets SET sale_id = $1, product_id = $2, quantity = $3, price = $4, updated_at = NOW() WHERE id = $5`
 
-	_, err := s.DB.Exec(context.Background(), query,
+	_, err := s.DB.Exec(ctx, query,
 		&basket.SaleID,
 		&basket.ProductID,
 		&basket.Quantity,
@@ -136,10 +132,10 @@ func (s *basketRepo) Update(basket models.UpdateBasket) (string, error) {
 	return basket.ID, nil
 }
 
-func (s *basketRepo) Delete(id string) error {
+func (s *basketRepo) Delete(ctx context.Context, id string) error {
 	query := `UPDATE baskets SET deleted_at = NOW() WHERE id = $1`
 
-	_, err := s.DB.Exec(context.Background(), query, id)
+	_, err := s.DB.Exec(ctx, query, id)
 	if err != nil {
 		log.Println("Error while deleting Repository :", err)
 		return err

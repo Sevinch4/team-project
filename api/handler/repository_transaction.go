@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 	"teamProject/api/models"
@@ -20,22 +21,21 @@ import (
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) CreateRepositoryTransaction(c *gin.Context)  {
+func (h Handler) CreateRepositoryTransaction(c *gin.Context) {
 	rtransaction := models.CreateRepositoryTransaction{}
 
-	if err :=  c.ShouldBindJSON(&rtransaction); err != nil {
+	if err := c.ShouldBindJSON(&rtransaction); err != nil {
 		handleResponse(c, "error while reading body", http.StatusBadRequest, err.Error())
 		return
 	}
 
-
-	id, err :=  h.storage.RTransaction().Create(rtransaction)
+	id, err := h.storage.RTransaction().Create(context.Background(), rtransaction)
 	if err != nil {
 		handleResponse(c, "error while creating repository transaction", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	createdRTransaction, err := h.storage.RTransaction().GetByID(models.PrimaryKey{
+	createdRTransaction, err := h.storage.RTransaction().GetByID(context.Background(), models.PrimaryKey{
 		ID: id,
 	})
 	if err != nil {
@@ -58,12 +58,13 @@ func (h *Handler) CreateRepositoryTransaction(c *gin.Context)  {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) GetRepositoryTransaction(c *gin.Context)  {
+func (h Handler) GetRepositoryTransaction(c *gin.Context) {
 	uid := c.Param("id")
 
-	repository, err := h.storage.RTransaction().GetByID(models.PrimaryKey{ID: uid})
+	repository, err := h.storage.RTransaction().GetByID(context.Background(), models.PrimaryKey{ID: uid})
 	if err != nil {
 		handleResponse(c, "error while getting repository transaction by ID", http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	handleResponse(c, "", http.StatusOK, repository)
@@ -83,7 +84,7 @@ func (h *Handler) GetRepositoryTransaction(c *gin.Context)  {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) GetRepositoryTransactionList(c *gin.Context) {
+func (h Handler) GetRepositoryTransactionList(c *gin.Context) {
 	var (
 		page, limit int
 		err         error
@@ -105,7 +106,7 @@ func (h *Handler) GetRepositoryTransactionList(c *gin.Context) {
 
 	search := c.Query("search")
 
-	response, err := h.storage.RTransaction().GetList(models.GetListRequest{
+	response, err := h.storage.RTransaction().GetList(context.Background(), models.GetListRequest{
 		Page:   page,
 		Limit:  limit,
 		Search: search,
@@ -131,7 +132,7 @@ func (h *Handler) GetRepositoryTransactionList(c *gin.Context) {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) UpdateRepositoryTransaction(c *gin.Context) {
+func (h Handler) UpdateRepositoryTransaction(c *gin.Context) {
 	uid := c.Param("id")
 
 	rTransaction := models.UpdateRepositoryTransaction{}
@@ -141,12 +142,12 @@ func (h *Handler) UpdateRepositoryTransaction(c *gin.Context) {
 	}
 
 	rTransaction.ID = uid
-	if _, err := h.storage.RTransaction().Update(rTransaction); err != nil {
+	if _, err := h.storage.RTransaction().Update(context.Background(), rTransaction); err != nil {
 		handleResponse(c, "error while updating repository transaction ", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	updatedRTransaction, err := h.storage.RTransaction().GetByID(models.PrimaryKey{ID: uid})
+	updatedRTransaction, err := h.storage.RTransaction().GetByID(context.Background(), models.PrimaryKey{ID: uid})
 	if err != nil {
 		handleResponse(c, "error while getting by ID", http.StatusInternalServerError, err.Error())
 		return
@@ -167,10 +168,10 @@ func (h *Handler) UpdateRepositoryTransaction(c *gin.Context) {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) DeleteRepositoryTransaction(c *gin.Context) {
+func (h Handler) DeleteRepositoryTransaction(c *gin.Context) {
 	uid := c.Param("id")
 
-	if err := h.storage.RTransaction().Delete(uid); err != nil {
+	if err := h.storage.RTransaction().Delete(context.Background(), uid); err != nil {
 		handleResponse(c, "error while deleting repository transaction ", http.StatusInternalServerError, err.Error())
 		return
 	}

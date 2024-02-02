@@ -61,7 +61,7 @@ func (b branchRepo) GetList(ctx context.Context, request models.GetListRequest) 
 	countQuery = `select count(1) from branches where deleted_at is NULL `
 
 	if search != "" {
-		countQuery += fmt.Sprintf(` and name ilike '%%%s%%'`, search)
+		countQuery += fmt.Sprintf(` and name ilike '%s'`, search)
 	}
 
 	if err := b.db.QueryRow(ctx, countQuery).Scan(&count); err != nil {
@@ -71,10 +71,10 @@ func (b branchRepo) GetList(ctx context.Context, request models.GetListRequest) 
 
 	query = `select id, name, address, created_at, updated_at from branches where deleted_at is NULL  `
 	if search != "" {
-		query += fmt.Sprintf(` and name ilike '%%%s%%' `, search)
+		query += fmt.Sprintf(` and name ilike '%s' `, search)
 	}
 
-	query += ` LIMIT $1 OFFSET $2`
+	query += ` order by created_at desc LIMIT $1 OFFSET $2 `
 	rows, err := b.db.Query(ctx, query, request.Limit, offset)
 	if err != nil {
 		fmt.Println("error is while selecting * from branches", err.Error())

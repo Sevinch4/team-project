@@ -27,14 +27,13 @@ type CreateTransaction struct {
 }
 
 type UpdateTransaction struct {
-	ID              string    `json:"-"`
-	SaleID          string    `json:"sale_id"`
-	StaffID         string    `json:"staff_id"`
-	TransactionType string    `json:"transaction_type"`
-	SourceType      string    `json:"source_type"`
-	Amount          float64   `json:"amount"`
-	Description     string    `json:"description"`
-	UpdatedAt       time.Time `json:"-"`
+	ID              string  `json:"-"`
+	SaleID          string  `json:"sale_id"`
+	StaffID         string  `json:"staff_id"`
+	TransactionType string  `json:"transaction_type"`
+	SourceType      string  `json:"source_type"`
+	Amount          float64 `json:"amount"`
+	Description     string  `json:"description"`
 }
 
 type TransactionResponse struct {

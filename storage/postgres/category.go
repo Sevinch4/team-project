@@ -65,7 +65,7 @@ func (c categoryRepo) GetList(ctx context.Context, request models.GetListRequest
 		query += fmt.Sprintf(` and name ilike '%%%s%%'`, search)
 	}
 
-	query += ` LIMIT $1 OFFSET $2`
+	query += ` order by created_at desc LIMIT $1 OFFSET $2 `
 	rows, err := c.db.Query(ctx, query, request.Limit, offset)
 	if err != nil {
 		fmt.Println("error is while selecting all", err.Error())

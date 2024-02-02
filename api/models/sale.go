@@ -27,15 +27,14 @@ type CreateSale struct {
 }
 
 type UpdateSale struct {
-	ID              string    `json:"-"`
-	BranchID        string    `json:"branch_id"`
-	ShopAssistantID string    `json:"shop_assistant_id"`
-	CashierID       string    `json:"cashier_id"`
-	PaymentType     string    `json:"payment_type"`
-	Price           float32   `json:"price"`
-	Status          string    `json:"status"`
-	ClientName      string    `json:"client_name"`
-	UpdatedAt       time.Time `json:"-"`
+	ID              string  `json:"-"`
+	BranchID        string  `json:"branch_id"`
+	ShopAssistantID string  `json:"shop_assistant_id"`
+	CashierID       string  `json:"cashier_id"`
+	PaymentType     string  `json:"payment_type"`
+	Price           float32 `json:"price"`
+	Status          string  `json:"status"`
+	ClientName      string  `json:"client_name"`
 }
 
 type SaleResponse struct {

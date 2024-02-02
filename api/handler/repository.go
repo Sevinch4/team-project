@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fmt"
+	"context"
 	"net/http"
 	"strconv"
 	"teamProject/api/models"
@@ -21,23 +21,21 @@ import (
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) CreateRepository(c *gin.Context)  {
+func (h Handler) CreateRepository(c *gin.Context) {
 	repository := models.CreateRepository{}
 
-	if err :=  c.ShouldBindJSON(&repository); err != nil {
+	if err := c.ShouldBindJSON(&repository); err != nil {
 		handleResponse(c, "error while reading body", http.StatusBadRequest, err.Error())
 		return
 	}
 
-	fmt.Println(repository.ProductID)
-
-	id, err :=  h.storage.Repository().Create(repository)
+	id, err := h.storage.Repository().Create(context.Background(), repository)
 	if err != nil {
 		handleResponse(c, "error while creating repository", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	createdRepository, err := h.storage.Repository().GetByID(models.PrimaryKey{
+	createdRepository, err := h.storage.Repository().GetByID(context.Background(), models.PrimaryKey{
 		ID: id,
 	})
 	if err != nil {
@@ -60,12 +58,13 @@ func (h *Handler) CreateRepository(c *gin.Context)  {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) GetRepository(c *gin.Context)  {
+func (h Handler) GetRepository(c *gin.Context) {
 	uid := c.Param("id")
 
-	repository, err := h.storage.Repository().GetByID(models.PrimaryKey{ID: uid})
+	repository, err := h.storage.Repository().GetByID(context.Background(), models.PrimaryKey{ID: uid})
 	if err != nil {
 		handleResponse(c, "error while getting repository by ID", http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	handleResponse(c, "", http.StatusOK, repository)
@@ -85,7 +84,7 @@ func (h *Handler) GetRepository(c *gin.Context)  {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) GetRepositoryList(c *gin.Context) {
+func (h Handler) GetRepositoryList(c *gin.Context) {
 	var (
 		page, limit int
 		err         error
@@ -107,7 +106,7 @@ func (h *Handler) GetRepositoryList(c *gin.Context) {
 
 	search := c.Query("search")
 
-	response, err := h.storage.Repository().GetList(models.GetListRequest{
+	response, err := h.storage.Repository().GetList(context.Background(), models.GetListRequest{
 		Page:   page,
 		Limit:  limit,
 		Search: search,
@@ -133,7 +132,7 @@ func (h *Handler) GetRepositoryList(c *gin.Context) {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) UpdateRepository(c *gin.Context) {
+func (h Handler) UpdateRepository(c *gin.Context) {
 	uid := c.Param("id")
 
 	repository := models.UpdateRepository{}
@@ -143,12 +142,12 @@ func (h *Handler) UpdateRepository(c *gin.Context) {
 	}
 
 	repository.ID = uid
-	if _, err := h.storage.Repository().Update(repository); err != nil {
+	if _, err := h.storage.Repository().Update(context.Background(), repository); err != nil {
 		handleResponse(c, "error while updating repository ", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	updatedRepository, err := h.storage.Repository().GetByID(models.PrimaryKey{ID: uid})
+	updatedRepository, err := h.storage.Repository().GetByID(context.Background(), models.PrimaryKey{ID: uid})
 	if err != nil {
 		handleResponse(c, "error while getting by ID", http.StatusInternalServerError, err.Error())
 		return
@@ -169,10 +168,10 @@ func (h *Handler) UpdateRepository(c *gin.Context) {
 // @Failure      400  {object}  models.Response
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
-func (h *Handler) DeleteRepository(c *gin.Context) {
+func (h Handler) DeleteRepository(c *gin.Context) {
 	uid := c.Param("id")
 
-	if err := h.storage.Repository().Delete(uid); err != nil {
+	if err := h.storage.Repository().Delete(context.Background(), uid); err != nil {
 		handleResponse(c, "error while deleting repository ", http.StatusInternalServerError, err.Error())
 		return
 	}
